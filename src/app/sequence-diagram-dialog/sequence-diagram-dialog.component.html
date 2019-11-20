@@ -1,0 +1,23 @@
+<div><span style="color: darkgoldenrod;">{{Notice}}</span>
+</div>
+<mat-form-field>
+  <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
+</mat-form-field>
+
+<div style="max-height: 80vh;min-width: 80vh;">
+
+  <mat-table [dataSource]="requestTags"  matSort>
+    <!-- Position Column -->
+
+    <ng-container matColumnDef="key">
+      <mat-header-cell *matHeaderCellDef mat-sort-header>Key </mat-header-cell>
+      <mat-cell *matCellDef="let element"> {{element.key}} </mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="value">
+      <mat-header-cell *matHeaderCellDef> Value </mat-header-cell>
+      <mat-cell *matCellDef="let element"> {{element.value}} </mat-cell>
+    </ng-container>
+    <mat-header-row *matHeaderRowDef="displayedColumnsTags"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: displayedColumnsTags;"></mat-row>
+  </mat-table>
+</div>

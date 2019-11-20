@@ -1,0 +1,65 @@
+<mat-drawer-container hasBackdrop="false" autosize fullscreen>
+  <mat-drawer  mode="side" #HistoryExpender   (click)=" ChangeHistoryOpenState()">
+    <div style=" display: flex; align-items: center; justify-content: center; height: 100%;">
+      <div>
+        <button mat-icon-button>
+          <mat-icon>slideshow</mat-icon>
+        </button>
+      </div>
+    </div>
+  </mat-drawer>
+
+  <mat-drawer-container hasBackdrop="false" autosize fullscreen>
+    <mat-drawer mode="side" #HistoryWindow     >
+      <mat-toolbar>
+        <div>History</div>
+        <span class="example-spacer"></span>
+        <button mat-icon-button>
+          <mat-icon (click)="ChangeHistoryOpenState()">close</mat-icon>
+        </button>
+      </mat-toolbar>
+
+      <app-history [rawEvents]="rawEvents" (loadFormHistory)=loadFormHistory($event)></app-history>
+    </mat-drawer>
+    <app-menu [rawEvents]="rawEvents" (FileOpen)="openFileTrigger($event)"></app-menu>
+
+    <div class="container-fluid">
+      <div class="flex-container" style="min-width:700px;">
+        <P style="margin-right:5px;margin-top:5px;">Result:</P>
+        <mat-radio-group style="margin-right:4px" [(ngModel)]="searchType">
+          <mat-radio-button style="margin-right:4px" value="1">First</mat-radio-button>
+          <mat-radio-button value="2" style="margin-right:7px">Aggregate</mat-radio-button>
+        </mat-radio-group>
+
+        <mat-form-field style="margin:4px;width: 300px">
+          <input matInput placeholder="Enter CallID" [(ngModel)]="selectedCallID">
+        </mat-form-field>
+
+        <button mat-raised-button (click)="Search()" style="margin:20px" matTooltip="Search">
+          <mat-icon aria-hidden="false">
+            search</mat-icon>Search
+        </button>
+      </div>
+
+      <app-sticky-note [events]="events"></app-sticky-note>
+
+      <mat-spinner *ngIf="loading"></mat-spinner>
+      <p style="color:red;MARGIN-LEFT:10px;">{{error}}</p>
+      <p style="color:darkgoldenrod;MARGIN-LEFT:10px;">{{note}}</p>
+
+      <mat-tab-group  [selectedIndex]="SelectedTabIndex"  (selectedTabChange)="tabChanged($event)">
+        <mat-tab label="Sequence Diagram">
+          <ng-template matTabContent>
+            <app-sequence-diagram [orderEvents]="orderEvents" [orderEvents]="orderEvents">
+            </app-sequence-diagram>
+          </ng-template>
+        </mat-tab>
+
+        <mat-tab label="Raw Data">
+          <app-tag-table [dataSource]="formattedRawEvent"></app-tag-table>
+        </mat-tab>
+      </mat-tab-group>
+
+    </div>
+  </mat-drawer-container>
+</mat-drawer-container>

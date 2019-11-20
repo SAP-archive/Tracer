@@ -1,0 +1,24 @@
+<div style="display: flex; width:100%">
+  <mat-form-field style="flex:1;">
+    <mat-chip-list #chipList aria-label="Tag selection">
+      <mat-chip *ngFor="let tag of tags;let i = index;" [selectable]="selectable" (click)="copyMessage(tag.value)|| tooltip.show()"
+
+        [removable]="removable" (removed)="remove(tag)">
+        <span #tooltip="matTooltip" matTooltip="Copied to clipboard"  [matTooltipShowDelay]='0'></span>
+        <span >{{tag.key}}: {{tag.sortValue}}</span>
+        <mat-icon matChipRemove *ngIf="removable"
+          >cancel</mat-icon>
+      </mat-chip>
+      <input #input type="text" placeholder="Sticky tags" (keyup)="OnChangeKey($event.target.value)"
+        [matChipInputFor]="chipList" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+        [matChipInputAddOnBlur]="addOnBlur" (matChipInputTokenEnd)="addChip($event)" [matAutocomplete]="auto">
+    </mat-chip-list>
+    <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selectAutoCompleteValue($event)">
+      <mat-option *ngFor="let name of autoComplete" [value]="name">{{name}}</mat-option>
+    </mat-autocomplete>
+  </mat-form-field>
+
+
+
+
+</div>

@@ -1,0 +1,12 @@
+::ng-deep .mat-content {
+  overflow: visible !important;
+}
+
+table {
+  width: 100%;
+}
+
+
+.mermaid {
+  font-size: 0px;
+}

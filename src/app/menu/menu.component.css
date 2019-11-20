@@ -1,0 +1,15 @@
+.button {
+  background:none;
+  color:inherit;
+  border:none;
+  font: inherit;
+  cursor: pointer;
+}
+
+.displayNone {
+  display: none;
+}
+.example-icon {
+  padding: 0 14px;
+}
+

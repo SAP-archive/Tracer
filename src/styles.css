@@ -1,0 +1,22 @@
+/* You can add global styles to this file, and also import other style files */
+@import "@angular/material/prebuilt-themes/purple-green.css";
+
+.messageText {
+  font-size: 16px;
+  cursor: pointer;
+}
+
+table {
+  width: 100%;
+}
+.mat-cell {
+  font-size: 9pt;
+}
+
+.mat-footer-row,
+.mat-row {
+  height: 35 !important;
+}
+.example-spacer {
+  flex: 1 1 auto;
+}

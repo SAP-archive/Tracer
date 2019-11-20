@@ -1,0 +1,9 @@
+td.mat-cell, td.mat-footer-cell, th.mat-header-cell
+{
+ border-width: 0px !important;
+}
+
+tr.mat-footer-row, tr.mat-row
+{
+  height: 30px !important;
+}

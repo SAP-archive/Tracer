@@ -1,0 +1,16 @@
+
+
+  <mat-table [dataSource]="tags" style="background: gray; width: 100%;">
+      <!-- Position Column -->
+
+      <ng-container matColumnDef="key">
+        <mat-header-cell *matHeaderCellDef>Key </mat-header-cell>
+        <mat-cell *matCellDef="let element"> {{element.key}} </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="value">
+        <mat-header-cell *matHeaderCellDef> Value </mat-header-cell>
+        <mat-cell *matCellDef="let element"> {{element.value}} </mat-cell>
+      </ng-container>
+      <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+      <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+    </mat-table>
