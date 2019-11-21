@@ -5,7 +5,7 @@ Distributed tracing visualization and debugging assistant.
 
 ## Demo
 
-The [app](http://Demo) can export and load its state local file(the button in the toolbar right corner), so download the examples paly around and reload.
+The [app](http://Demo) can export and load its state from local file(the button in the toolbar right corner), so download the examples paly around and reload.
 
 ## What in it for me?
 It simplifies the logs so you can focus on what meter.  
