@@ -5,7 +5,7 @@ export class EventModel {
   public spanId: string;
   public parentSpanId: string;
   public callId: string;
-  public exception: ExceptionInfo;
+  public error: string;
   public priority: string;
   public startedAt: Date;
   public durationMs: number;
@@ -13,12 +13,6 @@ export class EventModel {
   public mateData: MateData;
 }
 
-export interface ExceptionInfo {
-  innerException: ExceptionInfo;
-  message: string;
-  stackTrace: string;
-  type: string;
-}
 
 export interface Server {
   host: string;

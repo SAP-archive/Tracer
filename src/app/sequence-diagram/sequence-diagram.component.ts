@@ -78,19 +78,19 @@ export class SequenceDiagramComponent implements OnInit {
       action = escape(action);
 
       let lineType = '';
-          if (event.direction === Direction.RequestOneWay ) {
-          lineType = '->>';
-          } else if (event.direction === Direction.ResponseOneWay ) {
-            lineType = '-->>';
-        } else if (event.direction === Direction.RequestTwoWay && !event.mateData.isFake) {
-          lineType = '->>+';
-        } else if (event.direction === Direction.RequestTwoWay && event.mateData.isFake) {
-          lineType = '-X+';
-        } else if (event.direction === Direction.ResponseTwoWay && !event.mateData.isFake) {
-          lineType = '-->>-';
-        } else if (event.direction === Direction.ResponseTwoWay && event.mateData.isFake) {
-          lineType = '--X-';
-        }
+      if (event.direction === Direction.RequestOneWay) {
+        lineType = '->>';
+      } else if (event.direction === Direction.ResponseOneWay) {
+        lineType = '-->>';
+      } else if (event.direction === Direction.RequestTwoWay && !event.mateData.isFake) {
+        lineType = '->>+';
+      } else if (event.direction === Direction.RequestTwoWay && event.mateData.isFake) {
+        lineType = '-X+';
+      } else if (event.direction === Direction.ResponseTwoWay && !event.mateData.isFake) {
+        lineType = '-->>-';
+      } else if (event.direction === Direction.ResponseTwoWay && event.mateData.isFake) {
+        lineType = '--X-';
+      }
       output.push(`${from}${lineType}${to}:${sorter(action)} ${time}`);
 
       if (event.durationMs > 500) {
@@ -136,7 +136,7 @@ export class SequenceDiagramComponent implements OnInit {
       (line).onclick = () => {
         this.dialog.open(SequenceDiagramDialogComponent, { data: item });
       };
-      if ((item.exception && item.exception.message)) {
+      if ((item.error)) {
         line.style.strokeWidth = 2;
         line.style.stroke = 'red';
 
@@ -156,8 +156,6 @@ export class SequenceDiagramComponent implements OnInit {
     });
 
   }
-
-
 }
 
 export class Result {
