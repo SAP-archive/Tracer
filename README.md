@@ -5,12 +5,12 @@ Distributed tracing visualization and debugging assistant.
 
 ## Demo
 
-The [app](http://Demo) can export and load its state local file(the button in the tool bar right corner), so download the examples paly around and reload.
+The [app](http://Demo) can export and load its state local file(the button in the toolbar right corner), so download the examples paly around and reload.
 
 ## What in it for me?
-It simplify the logs so you can focus on what meter.  
-Developer and support engineer can understand and solve problem faster.  
-It can even used to document your flows.  
+It simplifies the logs so you can focus on what meter.  
+Developers and support engineers can understand and solve the problem faster.  
+It can even be used to document your flows.  
 
 ## Development server
 
@@ -26,11 +26,11 @@ Use the `--prod` flag for a production build.
 
 ## Integration
 
-This app connect to your local logging/tracing system by implanting simple Api. 
-First you should configure the api end point by setting `searchServiceUrl` in `\src\environments\environment.prod.ts` and `\src\environments\environment.ts` .
+This app connects to your local logging/tracing system by implanting simple API. 
+First, you should configure the API endpoint by setting `searchServiceUrl` in `\src\environments\environment.prod.ts` and `\src\environments\environment.ts`.
 
 The API should support this Request format: 
-```http://YourSearchService.com/v1/Search?callID=${callID}&aggregate=${aggregate}```
+``` Http://YourSearchService.com/v1/Search?callID=${callID}&aggregate=${aggregate}```
 
 The return format.  
 
@@ -57,17 +57,18 @@ The return format.
 
 |field| Description|
 |-----| -----------|
+|callId|every flow must have a unique identifier (flow can be everting that happened during user request)|
 |parentSpanId| The parent context, the first call should be with no parentSpanId|
-|spanId| New context for every call should be unique later it become the parentSpanId|
+|spanId| New context for every call should be unique later it becomes the parentSpanId|
 |durationMs| The time this action took|
-|direction| 0,2 are request. 1,3 are response. 0,1 is my recommendation for calls it will create request/response event if not exist. 2,3 are recommendation logging |
+|direction| 0,2 are request. 1,3 are the response. 0,1 is my recommendation for calls it will create a request/response event if not exist. 2,3 are recommendation logging |
 |action| What the action like login, GetUserList|
 |startedAt| What is the date that this event stat|
 |error| Error message it will change the line style to be red.
-|from.name |Which system genarate this log|
-|to.name | Which system are you calling (in log you calling to yourself)|
-|mateData|auto generated field, don't pass this data|
-|Any other| Tag use for sticky tag(summary), help you getting the context like the userID,DataCenter extra 
+|from.name |Which system generate this log|
+|to.name | Which system are you calling (in the log you calling to yourself)|
+|mateData|auto generated a field, don't pass this data|
+|Any other| Tag use for sticky tag(summary), help you get the context like the userID, DataCenter extra 
 
 
 
