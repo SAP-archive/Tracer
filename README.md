@@ -3,9 +3,9 @@ Distributed tracing visualization and debugging assistant.
 
 ![alt text](https://github.com/sap-staging/Tracer/blob/master/ReadMe/Main.PNG)
 
-## Demo
+## [Demo](http://Demo)
 
-The [app](http://Demo) can export and load its state from local file(the button in the toolbar right corner), so download the examples paly around and reload.
+The Demo will start with few record in the history panel to play with.
 
 ## What in it for me?
 It simplifies the logs so you can focus on what meter.  
@@ -24,13 +24,18 @@ Run `ng build` to build the project.
 The build artifacts will be stored in the `dist/` directory.   
 Use the `--prod` flag for a production build.
 
-## Integration
+## Integration 
 
-This app connects to your local logging/tracing system by implanting simple API. 
-First, you should configure the API endpoint by setting `searchServiceUrl` in `\src\environments\environment.prod.ts` and `\src\environments\environment.ts`.
+You can use this up as is by using files as your source.
+I recommend to connects it your local logging/tracing system by implanting simple API.  
+Configure the API endpoint by setting `searchServiceUrl` in `\src\environments\environment.prod.ts` and `\src\environments\environment.ts`.
 
 The API should support this Request format: 
 ``` Http://YourSearchService.com/v1/Search?callID=${callID}&aggregate=${aggregate}```
+
+* CallID ```<string>```:  unique identifie for call
+* Aggregate ```<boolean>```: my index are sparte to slow and fast index across multi region, false mean I take the first result with data that return. True I wait for all result to complete. 
+
 
 The return format.  
 
