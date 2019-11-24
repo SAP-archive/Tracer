@@ -60,7 +60,7 @@ The return format.
   
   ```
 
-|field| Description|
+|Field| Description|
 |-----| -----------|
 |callId|every flow must have an unique identifier (flow can be everything that happened during user request)|
 |spanId| An unique identifier to define a new scope. Any requests forked from this one, will inherit it as a parentSpanId|
