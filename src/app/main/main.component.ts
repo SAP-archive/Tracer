@@ -95,7 +95,7 @@ export class MainComponent implements OnInit {
         let minDate: Date;
         this.CallID = currentOperation;
         if (rawEvent && rawEvent.length > 0) {
-          const times = rawEvent.map(x => x.mateData.startedAtMs);
+          const times = rawEvent.map(x => x.metaData.startedAtMs);
           maxDate = new Date(Math.max.apply(Math, times));
           minDate = new Date(Math.min.apply(Math, times));
         }
