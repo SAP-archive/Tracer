@@ -1,18 +1,18 @@
 # Tracer
-Distributed tracing visualization and debugging assistant.
+Tracing visualization and debugging assistant for distributed systems.
 
 ![alt text](https://github.com/sap-staging/Tracer/blob/master/ReadMe/Main.PNG)
 
 ## [Demo](http://Demo)
 
-The Demo will start with few record in the history panel to play with.
+There is demo link showing few record in the history panel to play with.
 
-## What in it for me?
-It simplifies the logs so you can focus on what meter.  
-Developers and support engineers can understand and solve the problem faster.  
+## Why to use?
+It simplifies the flow understanding so you can focus on what is metter.  
+Developers and support engineers can understand and solve the problem easier.  
 It can even be used to document your flows.  
 
-## Development server
+## How to run on your development machine
 
 Run `ng serve` for a dev server.  
 Navigate to `http://localhost:4200/`.  
@@ -26,16 +26,16 @@ Use the `--prod` flag for a production build.
 
 ## Integration 
 
-You can use this up as is by using files as your source.
-I recommend to connects it your local logging/tracing system by implanting simple API.  
-Configure the API endpoint by setting `searchServiceUrl` in `\src\environments\environment.prod.ts` and `\src\environments\environment.ts`.
+You can use this app with two possible sources of data.
+The files from local file system or remote logging/tracing system.
+To connect with logging/tracing system by implementing simple API configure the API endpoint by setting `searchServiceUrl` in `\src\environments\environment.prod.ts` and `\src\environments\environment.ts`.
 
-The API should support this Request format: 
-``` Http://YourSearchService.com/v1/Search?callID=${callID}&aggregate=${aggregate}```
+The API should support the following request format: 
+``` http://YourSearchService.com/v1/Search?callID=${callID}&aggregate=${aggregate}```
 
-* CallID ```<string>```:  unique identifie for call
-* Aggregate ```<boolean>```: my index are sparte to slow and fast index across multi region, false mean I take the first result with data that return. True I wait for all result to complete. 
-
+* CallID ```<string>```:  an unique identifier for request
+* Aggregate ```<boolean>```: false means taking the first result with data that returns, true - wait for all result to be returned. 
+To disable Aggregate option, set ShowAggregateSearch to false.
 
 The return format.  
 
