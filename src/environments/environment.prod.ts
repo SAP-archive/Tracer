@@ -1,5 +1,6 @@
 export const environment = {
   production: true,
+  ShowAggregateSearch: false,
   searchServiceUrl: 'http://YourSearchService.com/v1/Search',
   defaultStickyTags: ['callId', 'tags.*' ]
   ,  'links': [

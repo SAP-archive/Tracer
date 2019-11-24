@@ -25,8 +25,8 @@
 
     <div class="container-fluid">
       <div class="flex-container" style="min-width:700px;">
-        <P style="margin-right:5px;margin-top:5px;">Result:</P>
-        <mat-radio-group style="margin-right:4px" [(ngModel)]="searchType">
+        <P *ngIf="ShowAggregateSearch" style="margin-right:5px;margin-top:5px;">Result:</P>
+        <mat-radio-group *ngIf="ShowAggregateSearch" style="margin-right:4px" [(ngModel)]="searchType">
           <mat-radio-button style="margin-right:4px" value="1">First</mat-radio-button>
           <mat-radio-button value="2" style="margin-right:7px">Aggregate</mat-radio-button>
         </mat-radio-group>

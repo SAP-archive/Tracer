@@ -7,6 +7,7 @@ import { SearchService } from '../search.service';
 import { appSettings } from '../app-settings/app-settings.service';
 import { MatDrawer } from '@angular/material/sidenav';
 import { MatTabChangeEvent } from '@angular/material/tabs';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-main',
@@ -26,6 +27,8 @@ export class MainComponent implements OnInit {
   public rawEvents: withMetaData<any[]>; // Use for save state
   public formattedRawEvent: any[]; // Use to display raw data
   public SelectedTabIndex: number;
+  public ShowAggregateSearch: boolean;
+
   @ViewChild('HistoryWindow', { static: true }) HistoryWindow: MatDrawer;
   @ViewChild('HistoryExpender', { static: true }) HistoryExpender: MatDrawer;
 
@@ -53,6 +56,7 @@ export class MainComponent implements OnInit {
       this.HistoryExpender.open();
     }
     this.SelectedTabIndex = this.settings.GetSelectedTabIndex();
+    this.ShowAggregateSearch = environment.ShowAggregateSearch;
   }
   private loadFromHistory(callID: string) {
     const index = this.settings.GetHistoryRecords().findIndex(x => x.callID === callID);
