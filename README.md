@@ -62,20 +62,19 @@ The return format.
 
 |field| Description|
 |-----| -----------|
-|callId|every flow must have a unique identifier (flow can be everting that happened during user request)|
-|parentSpanId| The parent context, the first call should be with no parentSpanId|
-|spanId| New context for every call should be unique later it becomes the parentSpanId|
-|durationMs| The time this action took|
-|direction| 0,2 are request. 1,3 are the response. 0,1 is my recommendation for calls it will create a request/response event if not exist. 2,3 are recommendation logging |
-|action| What the action like login, GetUserList|
-|startedAt| What is the date that this event stat|
-|error| Error message it will change the line style to be red.
-|from.name |Which system generate this log|
-|to.name | Which system are you calling (in the log you calling to yourself)|
-|mateData|auto generated a field, don't pass this data|
-|Any other| Tag use for sticky tag(summary), help you get the context like the userID, DataCenter extra 
+|callId|every flow must have an unique identifier (flow can be everything that happened during user request)|
+|spanId| An unique identifier to define a new scope. Any requests forked from this one, will inherit it as a parentSpanId|
+|parentSpanId| The parent scope id (the first scope expected to be with no parentSpanId)|
+|durationMs| The time elapsed |
+|direction| A number. 0 or 2: the request. 1 or 3: the response. 0 or 1, to create automatically completion if wasn't exist|
+|action| The action title, e.g. login, GetUserList|
+|startedAt| The timestamp the action started |
+|error| An error message, if present, changes the line styling to red.
+|from.name | A system name generates this request|
+|to.name | A system, the request calling to (in a log entry it calling to itself)|
+|metaData| An auto generated field (don't use this field)|
 
-
+Any additional fields will be automatically added. Will be possible to examine them on sticky tags summary bar.
 
 ## License
 
