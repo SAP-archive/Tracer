@@ -30,7 +30,6 @@ export class SequenceDiagramComponent implements OnInit {
       this._mermaidMarkdown = this.convertEventsToMermaid(orderedEvents);
       this.init();
     }
-
   }
 
   convertEventsToMermaid(orderedEvents: EventModel[]): any {
@@ -67,7 +66,7 @@ export class SequenceDiagramComponent implements OnInit {
 
 
     orderedEvents.forEach(event => {
-      const t = event.durationMs > 1000 ? `${Math.round(event.durationMs / 1000)} sec` : Math.round(event.durationMs) + ' ms';
+      const t = event.durationMs > 1000 ? `${Math.round(event.durationMs / 1000 * 100) / 100} sec` : Math.round(event.durationMs) + ' ms';
       const time: string = !event.metaData.isFake && event.durationMs !== 0 ? ` ⌛ ${t}` : ``;
 
       let action = event.action;
