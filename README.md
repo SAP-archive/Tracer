@@ -7,10 +7,9 @@ Tracing visualization and debugging assistant for distributed systems.
 
 There is demo link showing few record in the history panel to play with.
 
-## Why to use?
-It simplifies the flow understanding so you can focus on what is metter.  
-Developers and support engineers can understand and solve the problem easier.  
-It can even be used to document your flows.  
+## Why should I use this thing?
+Tracer helps you focus on the "bigger picture" by exposing you to a simplified sequance diargam comprised 
+of accurate component interactions within your application's logical flows.
 
 ## How to run on your development machine
 
@@ -26,9 +25,9 @@ Use the `--prod` flag for a production build.
 
 ## Integration 
 
-You can use this app with two possible sources of data.
-The files from local file system or remote logging/tracing system.
-To connect with logging/tracing system by implementing simple API configure the API endpoint by setting `searchServiceUrl` in `\src\environments\environment.prod.ts` and `\src\environments\environment.ts`.
+You can use this app with two possible sources of data.  
+The files from local file system or remote logging/tracing system.  
+To connect with logging/tracing system by implementing simple API configure the API endpoint by setting `searchServiceUrl` in `\src\environments\environment.prod.ts` and `\src\environments\environment.ts`.  
 
 The API should support the following request format: 
 ``` http://YourSearchService.com/v1/Search?callID=${callID}&aggregate=${aggregate}```
