@@ -1,4 +1,5 @@
 # Tracer
+
 Tracing visualization and debugging assistant for distributed systems.
 
 ![alt text](https://github.com/sap-staging/Tracer/blob/master/ReadMe/Main.PNG)
@@ -7,8 +8,9 @@ Tracing visualization and debugging assistant for distributed systems.
 
 There is demo link showing few record in the history panel to play with.
 
-## Why should I use this thing?
-Tracer helps you focus on the "bigger picture" by exposing you to a simplified sequance diargam comprised 
+## Why should I use Tracer?
+
+Tracer helps you focus on the "bigger picture" by exposing you to a simplified sequence diagram comprised 
 of accurate component interactions within your application's logical flows.
 
 ## How to run on your development machine
@@ -23,22 +25,11 @@ Run `ng build` to build the project.
 The build artifacts will be stored in the `dist/` directory.   
 Use the `--prod` flag for a production build.
 
-## Integration 
+### Source Format
 
-You can use this app with two possible sources of data.  
-The files from local file system or remote logging/tracing system.  
-To connect with logging/tracing system by implementing simple API configure the API endpoint by setting `searchServiceUrl` in `\src\environments\environment.prod.ts` and `\src\environments\environment.ts`.  
+The application Source format is json array: 
 
-The API should support the following request format: 
-``` http://YourSearchService.com/v1/Search?callID=${callID}&aggregate=${aggregate}```
-
-* CallID ```<string>```:  an unique identifier for request
-* Aggregate ```<boolean>```: false means taking the first result with data that returns, true - wait for all result to be returned. 
-To disable Aggregate option, set ShowAggregateSearch to false.
-
-The return format.  
-
-``` 
+``` json
 [   
       {
         'callId': 'guid',
@@ -57,23 +48,52 @@ The return format.
       }
   ]
   
-  ```
+```
 
-|Field| Description|
-|-----| -----------|
-|callId|every flow must have an unique identifier (flow can be everything that happened during user request)|
-|spanId| An unique identifier to define a new scope. Any requests forked from this one, will inherit it as a parentSpanId|
-|parentSpanId| The parent scope id (the first scope expected to be with no parentSpanId)|
-|durationMs| The time elapsed |
-|direction| A number. 0 or 2: the request. 1 or 3: the response. 0 or 1, to create automatically completion if wasn't exist|
-|action| The action title, e.g. login, GetUserList|
-|startedAt| The timestamp the action started |
-|error| An error message, if present, changes the line styling to red.
-|from.name | A system name generates this request|
-|to.name | A system, the request calling to (in a log entry it calling to itself)|
-|metaData| An auto generated field (don't use this field)|
+| Field        | Description                                                  |
+| ------------ | ------------------------------------------------------------ |
+| callId       | Every flow must have an unique identifier (a flow is comprised of all entities interactions of a single logical transaction)<br />Call Id should be identical across all event |
+| spanId       | An unique identifier to define a new scope. Any requests forked from this one, will inherit it as a **parentSpanId** |
+| parentSpanId | The parent scope id (the first scope expected to be with no parentSpanId) |
+| durationMs   | The time elapsed                                             |
+| direction    | A numeration that effect the sequence diagram style:<br />0  **Request** , <br />Line style: striate line *→*<br />Every request generate form this request will be inside of **operation block**  <br />When response don't exists it will auto generate a response with this arrow *X⇠*  to close the **operation block**.<br />The closing response if exists should always be with direction:1<br />1  **Response**, Line style: striate line *⇠*<br />Every request generate form the request will be inside of **operation block**  <br />When request don't exists it will auto generate a request with this arrow *→X* <br />The open request if exists should always be with direction:0<br />2  **Request**: Line style: striate line *→* <br />can be good feet for log or when you don't want operation block<br />3  **Response **:Line style: dashed line *⇠* <br />can be good feet for log or when you don't want operation block |
+| action       | The action title, e.g. login, GetUserList                    |
+| startedAt    | The timestamp the action started <br />**[Format string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date): **representing a date, specified in a format recognized by the [`Date.parse()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/parse) |
+| error        | An error message, if present, changes the line styling to red. |
+| from.name    | A system name generates this request                         |
+| to.name      | A system, the request calling to (in a log entry it calling to itself) |
+| metadata     | An auto generated field (don't use this field)               |
 
 Any additional fields will be automatically added. Will be possible to examine them on sticky tags summary bar.
+
+## File Source
+
+* Load event list from disk.
+* Save the event  allow you to share it, view it offline. 
+
+## Logging/Tracing Source
+
+To connect your logging/tracing system you have to Implementing simple search API.
+
+The API must receive callID, aggregate as a query pram.
+
+* CallID ```<string>```:  an unique identifier of a request.
+* Aggregate ```<boolean>```: true - wait for all result to be returned,  otherwise,  return first result.
+
+  > :bulb: To enable Aggregate option, set `ShowAggregateSearch` to true .
+
+  > :bulb:To define the URL, set `searchServiceUrl` to your search API.
+
+All the settings are in  `\src\environments\environment.prod.ts` and `\src\environments\environment.ts`.  
+
+[Read more about the response](###Event Format).
+
+## Ordering 
+
+The Sequence Diagram is like tree that start at the top item.
+The next level are all the node (spanid) with the same preantSpanId .
+
+Top item: recommended to be one event  with no parentSpanID.
 
 ## License
 
