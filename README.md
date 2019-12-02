@@ -29,7 +29,7 @@ Use the `--prod` flag for a production build.
 
 The application Source format is json array: 
 
-``` json
+``` 
 [   
       {
         'callId': 'guid',
@@ -56,9 +56,9 @@ The application Source format is json array:
 | spanId       | An unique identifier to define a new scope. Any requests forked from this one, will inherit it as a **parentSpanId** |
 | parentSpanId | The parent scope id (the first scope expected to be with no parentSpanId) |
 | durationMs   | The time elapsed                                             |
-| direction    | A numeration that effect the sequence diagram style:<br />0  **Request** , <br />Line style: striate line *→*<br />Every request generate form this request will be inside of **operation block**  <br />When response don't exists it will auto generate a response with this arrow *X⇠*  to close the **operation block**.<br />The closing response if exists should always be with direction:1<br />1  **Response**, Line style: striate line *⇠*<br />Every request generate form the request will be inside of **operation block**  <br />When request don't exists it will auto generate a request with this arrow *→X* <br />The open request if exists should always be with direction:0<br />2  **Request**: Line style: striate line *→* <br />can be good feet for log or when you don't want operation block<br />3  **Response **:Line style: dashed line *⇠* <br />can be good feet for log or when you don't want operation block |
+| direction    | A numeration that effect the sequence diagram style:<br />0  **Request** , <br />Line style: striate line *→*<br />Every request generate form this request will be inside of **operation block**  <br />When response don't exists it will auto generate a response with this arrow *X⇠*  to close the **operation block**.<br />The closing response if exists should always be with direction:1<br />1  **Response**, Line style: striate line *⇠*<br />Every request generate form the request will be inside of **operation block**  <br />When request don't exists it will auto generate a request with this arrow *→X* <br />The open request if exists should always be with direction:0<br />2  **Request**: Line style: striate line *→* <br />can be good feet for log or when you don't want operation block<br />3  **Response **:Line style: dashed line *⇠* <br />can be good fit for log or when you don't want operation block |
 | action       | The action title, e.g. login, GetUserList                    |
-| startedAt    | The timestamp the action started <br />**[Format string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date): **representing a date, specified in a format recognized by the [`Date.parse()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/parse) |
+| startedAt    | The timestamp the action started <br /> [**Format string**](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date): representing a date, specified in a format recognized by the [`Date.parse()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/parse) |
 | error        | An error message, if present, changes the line styling to red. |
 | from.name    | A system name generates this request                         |
 | to.name      | A system, the request calling to (in a log entry it calling to itself) |
@@ -81,7 +81,7 @@ The API must receive callID, aggregate as a query pram.
 * Aggregate ```<boolean>```: true - wait for all result to be returned,  otherwise,  return first result.
 
   > :bulb: To enable Aggregate option, set `ShowAggregateSearch` to true .
-
+  
   > :bulb:To define the URL, set `searchServiceUrl` to your search API.
 
 All the settings are in  `\src\environments\environment.prod.ts` and `\src\environments\environment.ts`.  
