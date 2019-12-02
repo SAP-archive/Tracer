@@ -4,6 +4,7 @@ import { withMetaData as withMetaData } from '../main/main.component';
 import { DatePipe } from '@angular/common';
 import { environment } from 'src/environments/environment';
 import { appSettings } from '../app-settings/app-settings.service';
+import { EventModel } from '../model/event-model';
 
 @Component({
   selector: 'app-menu',
@@ -11,11 +12,11 @@ import { appSettings } from '../app-settings/app-settings.service';
   styleUrls: ['./menu.component.css']
 })
 export class MenuComponent implements OnInit {
-  _rawEvents: withMetaData<any[]>;
+  _rawEvents: withMetaData<EventModel[]>;
   linksRaw: Link[] = [];
   links: Link[];
   @Input()
-  set rawEvents(rawEvents: withMetaData<any[]>) {
+  set rawEvents(rawEvents: withMetaData<EventModel[]>) {
     this._rawEvents = rawEvents;
     this.EnableSave = rawEvents && rawEvents.value && rawEvents.value.length > 0;
     this.updateLinkList();
@@ -32,7 +33,13 @@ export class MenuComponent implements OnInit {
   }
   saveFile() {
     if (this.EnableSave) {
-      const myObjStr: string = JSON.stringify(this._rawEvents.value, null, 2);
+      const deepClone: EventModel[] = JSON.parse(JSON.stringify(this._rawEvents.value));
+      // Remove metadata
+      deepClone.forEach(element => {
+       delete element['metadata'];
+      });
+
+      const myObjStr: string = JSON.stringify(deepClone, null, 2);
       const blob = new Blob([myObjStr], { type: 'text/plain;charset=utf-8' });
       saveAs(blob, this._rawEvents.CallID + '.json');
     }

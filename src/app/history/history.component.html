@@ -2,11 +2,11 @@
   <mat-list-item *ngFor="let item of Items; let index = index" [class.selected]='selectedItem === index'
     (click)="load(item)">
     <div mat-line>{{item.name && item.name !== ""?item.name : item.callID}} </div>
-    <p mat-line style="font-size: 9pt" *ngIf="item.errorCode&&item.errorCode!=='0'" >
-      {{item.errorCode === "0" ? "" : "errorCode:"+item.errorCode}}
+    <p mat-line style="font-size: 9pt" *ngIf="item.error">
+      {{item.error ? "" : "errorCode:"+item.error}}
     </p>
-    <p mat-line style="font-size: 9pt" *ngIf="item.timeSpan||item.endPoint||item.dc||item.env">
-      {{item.timeSpan}} {{item.endPoint}} {{item.dc}}-{{item.env}}
+    <p mat-line style="font-size: 9pt" *ngIf="item.startedAt||item.action">
+      {{item.startedAt}} {{item.action}}
     </p>
     <span class="example-spacer"></span>
     <button mat-icon-button (click)="edit(item) || $event.stopPropagation() ">

@@ -67,7 +67,7 @@ export class SequenceDiagramComponent implements OnInit {
 
     orderedEvents.forEach(event => {
       const t = event.durationMs > 1000 ? `${Math.round(event.durationMs / 1000 * 100) / 100} sec` : Math.round(event.durationMs) + ' ms';
-      const time: string = !event.metaData.isFake && event.durationMs !== 0 ? ` ⌛ ${t}` : ``;
+      const time: string = !event.metadata.isFake && event.durationMs !== 0 ? ` ⌛ ${t}` : ``;
 
       let action = event.action;
 
@@ -81,13 +81,13 @@ export class SequenceDiagramComponent implements OnInit {
         lineType = '->>';
       } else if (event.direction === Direction.ResponseOneWay) {
         lineType = '-->>';
-      } else if (event.direction === Direction.RequestTwoWay && !event.metaData.isFake) {
+      } else if (event.direction === Direction.RequestTwoWay && !event.metadata.isFake) {
         lineType = '->>+';
-      } else if (event.direction === Direction.RequestTwoWay && event.metaData.isFake) {
+      } else if (event.direction === Direction.RequestTwoWay && event.metadata.isFake) {
         lineType = '-X+';
-      } else if (event.direction === Direction.ResponseTwoWay && !event.metaData.isFake) {
+      } else if (event.direction === Direction.ResponseTwoWay && !event.metadata.isFake) {
         lineType = '-->>-';
-      } else if (event.direction === Direction.ResponseTwoWay && event.metaData.isFake) {
+      } else if (event.direction === Direction.ResponseTwoWay && event.metadata.isFake) {
         lineType = '--X-';
       }
       output.push(`${from}${lineType}${to}:${sorter(action)} ${time}`);

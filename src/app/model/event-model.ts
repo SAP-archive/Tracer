@@ -10,7 +10,7 @@ export class EventModel {
   public startedAt: Date;
   public durationMs: number;
   public direction: Direction;
-  public metaData: metaData;
+  public metadata: metadata;
 }
 
 
@@ -20,7 +20,7 @@ export interface Server {
   version: string;
 }
 
-export interface metaData {
+export interface metadata {
   generateParentSpanId: boolean;
   isFake: boolean;
   count: number;

@@ -25,22 +25,34 @@ export class HistoryComponent {
     if (rawEvents && rawEvents.value && rawEvents.value.length > 0) {
       if (!this.Items.find(x => x.callID === rawEvents.CallID && x.result.length === rawEvents.value.length)) {
         const item = { callID: rawEvents.CallID, result: rawEvents.value } as historyRecord;
-        // const request = data.find(x => x['@type'] === 'request');
-        //  if (request) {
-        //item.timeSpan = this.datepipe.transform(new Date(request['@timestamp']), 'yyyy-MM-dd HH:MM');
-        //   item.endPoint = request.endpoint;
-        //  item.errorCode = request.errCode;
-        //   item.dc = request['@datacenter'];
-        //   item.env = request.runtime.env;
+        const root = item.result.find(x => !x.parentSpanId);
+        if (root) {
+          item.startedAt = this.datepipe.transform(new Date(root.startedAt), 'yyyy-MM-dd HH:MM');
+          item.action = root.action;
+          item.error = root.error;
 
-        //    }
+        }
         this.Items.unshift(item);
 
         if (this.Items.length > 300) {
           this.Items.splice(300, 1);
         }
+        try {
+          this.setting.SetHistoryRecords(this.Items);
+        } catch (ex) {
 
-        this.setting.SetHistoryRecords(this.Items);
+          try {
+            // try to reduce the item in history and save again
+            if (this.Items.length > 100) {
+              this.Items.splice(100, this.Items.length - 100);
+              this.setting.SetHistoryRecords(this.Items);
+            }
+          } catch (error) {
+            console.warn('fail to save  history', error);
+          }
+
+        }
+
 
       } else {
         this.selectedItem = this.Items.findIndex(x => x.callID === rawEvents.CallID);
@@ -73,14 +85,12 @@ export class HistoryComponent {
 
 // tslint:disable-next-line: class-name
 export class historyRecord {
-  errorCode: string;
-  endPoint: string;
+  error: string;
+  action: string;
   name: string;
   callID: string;
   result: EventModel[];
   createDate: Date;
-  dc: string;
-  env: string;
-  timeSpan: string;
+  startedAt: string;
 }
 

@@ -18,7 +18,7 @@ export class SequenceDiagramDialogComponent implements OnInit {
 
   constructor(@Inject(MAT_DIALOG_DATA) eventModel: EventModel) {
     this.Notice = '';
-    if (eventModel && eventModel.metaData && eventModel.metaData.isFake) {
+    if (eventModel && eventModel.metadata && eventModel.metadata.isFake) {
       this.Notice = 'Note: This event is auto generate for the graph';
     }
     const flatObject = this.flattenObject(eventModel);

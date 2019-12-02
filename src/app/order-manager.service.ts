@@ -1,4 +1,4 @@
-import { EventModel, Direction, metaData } from './model/event-model';
+import { EventModel, Direction, metadata } from './model/event-model';
 import { Injectable } from '@angular/core';
 interface Dictionary<T> {
   [Key: string]: T;
@@ -7,10 +7,10 @@ interface Dictionary<T> {
 
 const getRequestDestination = (event: EventModel) => {
   if (event.spanId) {
-    return `${event.direction}_${event.spanId}_${event.metaData.count}`;
+    return `${event.direction}_${event.spanId}_${event.metadata.count}`;
   } else { // To support broken event
     return `${event.from.name && event.from.name.toLowerCase()}->${event.to && event.to.name && event.to.name.toLowerCase()
-      }:.${event.direction}_${event.spanId}_${event.metaData.count}`;
+      }:.${event.direction}_${event.spanId}_${event.metadata.count}`;
   }
 };
 
@@ -18,10 +18,10 @@ const getRequestOppositeDestination = (event: EventModel) => {
   const direction = event.direction === Direction.RequestTwoWay ? Direction.ResponseTwoWay : Direction.RequestTwoWay;
 
   if (event.spanId) {
-    return `${direction}_${event.spanId}_${event.metaData.count}`;
+    return `${direction}_${event.spanId}_${event.metadata.count}`;
   } else { // To support broken event
     return `${event.to && event.to.name && event.to.name.toLowerCase()
-      }->${event.from.name && event.from.name.toLowerCase()}:.${direction}_${event.spanId}_${event.metaData.count}`;
+      }->${event.from.name && event.from.name.toLowerCase()}:.${direction}_${event.spanId}_${event.metadata.count}`;
   }
 };
 
@@ -36,13 +36,18 @@ export class OrderManagerService {
   GetRemoteCall(events: EventModel[]): Dictionary<EventModel> {
     const dictionary: Dictionary<EventModel> = {};
 
-    // tslint:disable-next-line: no-inferrable-types
-    let count: number = 1;
-    events.forEach(x => {
-      x.metaData = { startedAtMs: new Date(x.startedAt).getTime() } as metaData;
+    // ignore the user metadata
+    events.forEach(element => {
+      delete element['metadata'];
     });
 
-    events = events.sort((a, b) => a.metaData.startedAtMs - b.metaData.startedAtMs);
+    let count: number = 1;
+    events.forEach(x => {
+      x.metadata = { startedAtMs: new Date(x.startedAt).getTime() } as metadata;
+    });
+
+
+    events = events.sort((a, b) => a.metadata.startedAtMs - b.metadata.startedAtMs);
     const requests: EventModel[] = events.filter((event) => (event.from && event.from.name) && event.to
     ) as EventModel[];
 
@@ -51,7 +56,7 @@ export class OrderManagerService {
 
       // support duplicate event
       if (dictionary[id]) {
-        request.metaData.count = count++;
+        request.metadata.count = count++;
         id = getRequestDestination(request);
       }
 
@@ -70,9 +75,9 @@ export class OrderManagerService {
           to: request.from,
           action: request.action,
           startedAt: request.startedAt,
-          metaData: {
-            startedAtMs: request.metaData.startedAtMs,
-            count: request.metaData.count,
+          metadata: {
+            startedAtMs: request.metadata.startedAtMs,
+            count: request.metadata.count,
             isFake: true,
           }
         } as EventModel;
@@ -99,7 +104,7 @@ export class OrderManagerService {
     const visitRoots: EventModel[] = [];
     //  More Root can be added later if not connected to the root span chain
     const roots = requestToOtherSystems.filter(event => !event.parentSpanId)
-      .sort((a, b) => b.metaData.startedAtMs - a.metaData.startedAtMs);
+      .sort((a, b) => b.metadata.startedAtMs - a.metadata.startedAtMs);
 
     while (hasMissingFlows) {
       if (roots.length !== 0) {
@@ -111,7 +116,7 @@ export class OrderManagerService {
         // when your log is events that not order by Hierarchy we need to do best effort to extract them
         const missingEvent = requestToOtherSystems.
           filter(event => !flowSeen[event.spanId] && visitRoots.findIndex(x => x === event) === -1)
-          .sort((a, b) => a.metaData.startedAtMs - b.metaData.startedAtMs);
+          .sort((a, b) => a.metadata.startedAtMs - b.metadata.startedAtMs);
         if (missingEvent && missingEvent.length > 0) {
           roots.push(missingEvent[0]);
         } else {
@@ -143,7 +148,7 @@ export class OrderManagerService {
           const childFlows = requestToOtherSystems.filter(event => event.parentSpanId === flow.spanId);
           if (childFlows) {
             // order is opposite of stack
-            childFlows.sort((a, b) => b.metaData.startedAtMs - a.metaData.startedAtMs).forEach((child: EventModel) => {
+            childFlows.sort((a, b) => b.metadata.startedAtMs - a.metadata.startedAtMs).forEach((child: EventModel) => {
               orderedFlows.push(child);
             });
           }
