@@ -27,7 +27,7 @@ Use the `--prod` flag for a production build.
 
 ### Source Format
 
-The application Source format is json array: 
+The application source format is json array: 
 
 ``` 
 [   
@@ -52,11 +52,11 @@ The application Source format is json array:
 
 | Field        | Description                                                  |
 | ------------ | ------------------------------------------------------------ |
-| callId       | Every flow must have an unique identifier (a flow is comprised of all entities interactions of a single logical transaction)<br />Call Id should be identical across all event |
-| spanId       | An unique identifier to define a new scope. Any requests forked from this one, will inherit it as a **parentSpanId** |
+| callId       | Every flow must have an unique identifier (a flow is comprised of all entities interactions of a single logical transaction)<br />Call Id should be identical across all event. |
+| spanId       | An unique identifier to define a new scope. Any interactions forked from this one, will inherit it as a **parentSpanId** |
 | parentSpanId | The parent scope id (the first scope expected to be with no parentSpanId) |
 | durationMs   | The time elapsed                                             |
-| direction    | A numeration that effect the sequence diagram style:<br />0  **Request** , <br />Line style: striate line *→*<br />Every request generate form this request will be inside of **operation block**  <br />When response don't exists it will auto generate a response with this arrow *X⇠*  to close the **operation block**.<br />The closing response if exists should always be with direction:1<br />1  **Response**, Line style: striate line *⇠*<br />Every request generate form the request will be inside of **operation block**  <br />When request don't exists it will auto generate a request with this arrow *→X* <br />The open request if exists should always be with direction:0<br />2  **Request**: Line style: striate line *→* <br />can be good feet for log or when you don't want operation block<br />3  **Response **:Line style: dashed line *⇠* <br />can be good fit for log or when you don't want operation block |
+| direction    | A numeration that effect the sequence diagram:<br /><br />**Logical transaction:**<br />All the inner interactions will be in the same **operation block **.<br />comprise of start and end, when one of them is missing it will auto generate it  (The line courser will be --X>). <br /><br />**Case 0 logical transaction start** (striate line *→* )<br />**Case 1 logical transaction end**   (dashed line *⇠*)<br /> <br /> <br />**Action with no continuation: **<br />A simple line with no side effect ,Log are excellent example of it.  <br />**Case 2 Action Start** ( striate line *→*) <br />**Case 3 Action End**  ( dashed line *⇠* )<br /> |
 | action       | The action title, e.g. login, GetUserList                    |
 | startedAt    | The timestamp the action started <br /> [**Format string**](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date): representing a date, specified in a format recognized by the [`Date.parse()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/parse) |
 | error        | An error message, if present, changes the line styling to red. |
@@ -64,24 +64,25 @@ The application Source format is json array:
 | to.name      | A system, the request calling to (in a log entry it calling to itself) |
 | metadata     | An auto generated field (don't use this field)               |
 
-Any additional fields will be automatically added. Will be possible to examine them on sticky tags summary bar.
+Any additional fields will be automatically added and can be examine.
 
 ## File Source
 
 * Load event list from disk.
-* Save the event  allow you to share it, view it offline. 
+* Save events on disk. 
 
 ## Logging/Tracing Source
 
 To connect your logging/tracing system you have to Implementing simple search API.
 
-The API must receive callID, aggregate as a query pram.
+The API must receive `callID`, `aggregate` as a query pram.
 
 * CallID ```<string>```:  an unique identifier of a request.
+
 * Aggregate ```<boolean>```: true - wait for all result to be returned,  otherwise,  return first result.
 
   > :bulb: To enable Aggregate option, set `ShowAggregateSearch` to true .
-  
+
   > :bulb:To define the URL, set `searchServiceUrl` to your search API.
 
 All the settings are in  `\src\environments\environment.prod.ts` and `\src\environments\environment.ts`.  
@@ -91,9 +92,9 @@ All the settings are in  `\src\environments\environment.prod.ts` and `\src\envir
 ## Ordering 
 
 The Sequence Diagram is like tree that start at the top item.
-The next level are all the node (spanid) with the same preantSpanId .
+The next level are all the node (spanId) with the same preantSpanId .
 
-Top item: recommended to be one event  with no parentSpanID.
+Top item: recommended to be one event  with no parentSpanId.
 
 ## License
 
