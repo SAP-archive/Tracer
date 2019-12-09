@@ -66,7 +66,7 @@ The application source format is json array:
 
 Any additional fields will be automatically added and can be examine.
 
-[Read More distributed logging.](https://blog.imaginea.com/opentracing-in-java-for-microservices-observability/)
+[Read More distributed logging.](distributed logging)
 
 ## File Source
 
