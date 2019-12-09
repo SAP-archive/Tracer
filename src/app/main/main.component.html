@@ -44,7 +44,7 @@
       <app-sticky-note [events]="events"></app-sticky-note>
 
       <mat-spinner *ngIf="loading"></mat-spinner>
-      <p style="color:red;MARGIN-LEFT:10px;">{{error}}</p>
+      <p style="color:red;MARGIN-LEFT:10px; white-space: pre-wrap; font-weight: bold;">{{error}}</p>
       <p style="color:darkgoldenrod;MARGIN-LEFT:10px;">{{note}}</p>
 
       <mat-tab-group  [selectedIndex]="SelectedTabIndex"  (selectedTabChange)="tabChanged($event)">

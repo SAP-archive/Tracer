@@ -66,6 +66,13 @@ export class MainComponent implements OnInit {
       this.selectedCallID = callID;
       this.init(c => Promise.resolve(this.settings.GetHistoryRecords()[index].result));
     } else {
+      if (environment.searchServiceUrl === 'http://YourSearchService.com/v1/Search') {
+        this.error = 'Configuration required.'
+          + '\n To enable search, please configure connection to the source of logs / events.'
+          + '\n For more details: https://github.com/sap/Tracer#loggingtracing-source.';
+        this.loading = false;
+        return;
+      }
       this.init(c => this.searchService.GetFlow(c, this.searchType === '1'));
     }
   }
@@ -129,6 +136,15 @@ export class MainComponent implements OnInit {
       this.loading = false;
       return;
     }
+
+    if (environment.searchServiceUrl === 'http://YourSearchService.com/v1/Search') {
+      this.error = 'Configuration required.'
+        + '\n To enable search, please configure connection to the source of logs / events.'
+        + '\n For more details: https://github.com/sap/Tracer#loggingtracing-source.';
+      this.loading = false;
+      return;
+    }
+
     this.selectedCallID = this.selectedCallID.trim();
     this.CallID = this.selectedCallID;
     this.settings.SetCallID(this.CallID);
