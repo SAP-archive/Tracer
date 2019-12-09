@@ -88,7 +88,6 @@ The API must receive `callID`, `aggregate` as a query pram.
 
 All the settings are in  `\src\environments\environment.prod.ts` and `\src\environments\environment.ts`.  
 
-[Read more about the response](###Event Format).
 
 ## Ordering 
 
