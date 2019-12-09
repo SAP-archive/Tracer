@@ -20,3 +20,9 @@ table {
 .example-spacer {
   flex: 1 1 auto;
 }
+
+
+/* for firefox   */
+.actor {
+  font-size: 14px ;
+}
