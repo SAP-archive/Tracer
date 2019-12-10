@@ -4,7 +4,7 @@
   <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
 </mat-form-field>
 
-<div style="max-height: 80vh;min-width: 80vh;">
+<div style="height: 80vh;width: 80vh;">
 
   <mat-table [dataSource]="requestTags"  matSort>
     <!-- Position Column -->
