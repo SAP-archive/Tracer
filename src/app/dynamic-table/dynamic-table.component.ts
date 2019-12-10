@@ -10,7 +10,7 @@ export class DynamicTableComponent {
   private _dataSource;
   public tags: Tag[];
   @Input()
-  set dataSource(dataSource: string[]) {
+  set dataSource(dataSource: any[]) {
     this._dataSource = dataSource;
     // Filter
 
@@ -20,7 +20,7 @@ export class DynamicTableComponent {
     // Filter
     const tags: Tag[] = [];
     for (let i = 0; i < columns.length; i++) {
-      const value = this._dataSource[i];
+      const value = this._dataSource[columns[i].header];
       if (value) {
         tags.push({ key: columns[i].header, value: value } as Tag);
       }

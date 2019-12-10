@@ -1,6 +1,8 @@
-import { Component,  Input } from '@angular/core';
+import { Component, Input, ViewChild } from '@angular/core';
 import { trigger, state, style, transition, animate } from '@angular/animations';
 import { MatTableDataSource } from '@angular/material/table';
+import { MatSort, MatSortable } from '@angular/material/sort';
+import { promise } from 'protractor';
 
 @Component({
   selector: 'app-expanded-dynamic-table',
@@ -17,19 +19,23 @@ import { MatTableDataSource } from '@angular/material/table';
 
 
 export class ExpandedDynamicTableComponent {
+
+  @ViewChild(MatSort, { static: true }) sort: MatSort;
+
   @Input()
   public set dataSource(dataSource: string[][]) {
     this._dataSource.data = dataSource || [];
+    this._dataSource.sort = this.sort;
   }
+
   @Input()
   public set columnsToDisplay(columnsToDisplay: string[]) {
-
     this._columnsToDisplay = columnsToDisplay || [];
+
   }
   @Input()
-  columns;
+  columns: any[];
   _dataSource: MatTableDataSource<any[]> = new MatTableDataSource<any[]>();
   _columnsToDisplay = [];
   expandedElement: any | null;
 }
-

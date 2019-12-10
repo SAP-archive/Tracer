@@ -12,7 +12,7 @@ import { appSettings } from '../app-settings/app-settings.service';
 export class TagTableComponent {
 
   manualSelection: string[] = [];
-  _dataSource: string[][] = [];
+  _dataSource: any[] = [];
   @Input()
   set defaultField(defaultFieldToDisplay: string[]) {
     this.manualSelection = defaultFieldToDisplay ? defaultFieldToDisplay : [];
@@ -89,14 +89,14 @@ export class TagTableComponent {
   }
 
   public GenarateValues(fields: string[], flatten: any[]) {
-    const tableData: string[][] = [];
+    const tableData: any[] = [];
     flatten.forEach(f => {
-      const row: string[] = [];
+      const row: any = {};
       fields.forEach(fe => {
         const value = f[fe];
         if (value) {
-          row.push(value.toString());
-        } else { row.push(''); }
+          row[fe] = (value.toString());
+        } else { row[fe] = (''); }
       });
       tableData.push(row);
     });
