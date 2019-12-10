@@ -1,12 +1,19 @@
 <mat-nav-list>
   <mat-list-item *ngFor="let item of Items; let index = index" [class.selected]='selectedItem === index'
     (click)="load(item)">
-    <div mat-line>{{item.name && item.name !== ""?item.name : item.callID}} </div>
-    <p mat-line style="font-size: 9pt" *ngIf="item.error">
-      {{item.error ? "" : "errorCode:"+item.error}}
+    <div mat-line matTooltip='{{item.name && item.name !== ""?item.name : item.callID}}'>{{text_truncate(
+      item.name && item.name !== ""?item.name : item.callID,23)
+    }} </div>
+
+
+    <p mat-line style="font-size: 9pt" *ngIf="item.startedAt">
+      {{item.startedAt}}
     </p>
-    <p mat-line style="font-size: 9pt" *ngIf="item.startedAt||item.action">
-      {{item.startedAt}} {{item.action}}
+    <p mat-line style="font-size: 9pt" *ngIf="item.error" matTooltip='{{item.error}}'>
+      error: {{text_truncate(item.error,30)}}
+    </p>
+    <p mat-line style="font-size: 9pt" *ngIf="item.action" matTooltip='{{item.action}}'>
+      action: {{text_truncate(item.action,25)}}
     </p>
     <span class="example-spacer"></span>
     <button mat-icon-button (click)="edit(item) || $event.stopPropagation() ">
