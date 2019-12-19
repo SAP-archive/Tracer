@@ -1,7 +1,8 @@
 export const environment = {
   production: true,
   ShowAggregateSearch: false,
-  searchServiceUrl: 'http://YourSearchService.com/v1/Search',
+  searchServiceUrl: 'http://YourSearchService.com/v1/Searchf',
+  zipkinUrl: 'http://localhost:8962',
   defaultStickyTags: ['callId', 'tags.*' ]
   ,  'links': [
     {

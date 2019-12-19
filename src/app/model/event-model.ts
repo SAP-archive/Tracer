@@ -11,6 +11,10 @@ export class EventModel {
   public durationMs: number;
   public direction: Direction;
   public metadata: metadata;
+  constructor() {
+    this.from = {} as Server;
+    this.to = {} as Server;
+  }
 }
 
 
