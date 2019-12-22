@@ -47,7 +47,7 @@
       <p style="color:red;MARGIN-LEFT:10px; white-space: pre-wrap; font-weight: bold;">{{error}}</p>
       <p style="color:darkgoldenrod;MARGIN-LEFT:10px;">{{note}}</p>
 
-      <mat-tab-group  [selectedIndex]="SelectedTabIndex"  (selectedTabChange)="tabChanged($event)">
+      <mat-tab-group id="tabGroup"  [selectedIndex]="SelectedTabIndex"  (selectedTabChange)="tabChanged($event)">
         <mat-tab label="Sequence Diagram">
           <ng-template matTabContent>
             <app-sequence-diagram [orderEvents]="orderEvents" [orderEvents]="orderEvents">
