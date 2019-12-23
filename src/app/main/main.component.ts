@@ -212,6 +212,7 @@ export class MainComponent implements OnInit {
   public ChangeHistoryOpenState() {
     this.HistoryExpender.toggle();
     this.HistoryWindow.toggle();
+
     this.settings.SetHistoryOpenDefaultPosition(!this.settings.GetHistoryOpenDefaultPosition());
     this.settings.save();
   }

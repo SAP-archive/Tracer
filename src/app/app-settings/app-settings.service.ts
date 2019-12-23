@@ -34,14 +34,26 @@ export class appSettings {
       this.route.queryParams.subscribe(params => {
 
         this.UrlSettings.CallID = params['CallID'];
-        this.UrlSettings.HistoryOpenDefaultPosition = params['OpenHistory'];
         this.UrlSettings.SelectedTabIndex = params['SelectedTab'];
 
-        const stickyTags: string = params['StickyTags'];
-        this.UrlSettings.StickyTags = stickyTags.split(',');
+        const openHistory = params['OpenHistory'];
 
+        if (openHistory === 'true') {
+          this.UrlSettings.HistoryOpenDefaultPosition = true;
+        }
+        if (openHistory === 'false') {
+          this.UrlSettings.HistoryOpenDefaultPosition = false;
+        }
+
+        const stickyTags: string = params['StickyTags'];
+        if (stickyTags) {
+          this.UrlSettings.StickyTags = stickyTags.split(',');
+        }
         const SelectedFelids: string = params['SelectedFelids'];
-        this.UrlSettings.SelectedFelids = SelectedFelids.split(',');
+        if (SelectedFelids) {
+          this.UrlSettings.SelectedFelids = SelectedFelids.split(',');
+        }
+
 
       });
 
@@ -62,8 +74,8 @@ export class appSettings {
 
     let query: string;
     query = this.UrlSettings.CallID ? `?CallID=${this.UrlSettings.CallID}` : ``;
-    query += this.UrlSettings.HistoryOpenDefaultPosition ? `&OpenHistory=${this.UrlSettings.HistoryOpenDefaultPosition}` : ``;
-    query += this.UrlSettings.SelectedTabIndex ? `&SelectedTab=${this.UrlSettings.SelectedTabIndex}` : ``;;
+    query += this.UrlSettings.HistoryOpenDefaultPosition !== undefined ? `&OpenHistory=${this.UrlSettings.HistoryOpenDefaultPosition}` : ``;
+    query += this.UrlSettings.SelectedTabIndex ? `&SelectedTab=${this.UrlSettings.SelectedTabIndex}` : ``;
     query += this.UrlSettings.StickyTags ? `&StickyTags=${this.UrlSettings.StickyTags.join(`,`)}` : ``;
     query += this.UrlSettings.SelectedFelids ? `&SelectedFelids=${this.UrlSettings.SelectedFelids.join(`,`)}` : ``;
 
@@ -111,7 +123,13 @@ export class appSettings {
   }
 
   public GetHistoryOpenDefaultPosition() {
-    return this.UrlSettings.HistoryOpenDefaultPosition || this.DefaultSettings.HistoryOpenDefaultPosition || true;
+    if (this.UrlSettings.HistoryOpenDefaultPosition !== undefined) {
+      return this.UrlSettings.HistoryOpenDefaultPosition;
+    }
+    if (this.DefaultSettings.HistoryOpenDefaultPosition !== undefined) {
+      return this.DefaultSettings.HistoryOpenDefaultPosition;
+    }
+    return true;
   }
 
   public SetHistoryOpenDefaultPosition(historyOpenDefaultPosition: boolean) {
