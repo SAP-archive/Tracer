@@ -3,6 +3,7 @@ import { environment } from 'src/environments/environment.prod';
 import { historyRecord } from '../history/history.component';
 import { HistoryExample } from './history-example';
 import { Location } from '@angular/common';
+import { ActivatedRoute } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
@@ -13,10 +14,9 @@ export class appSettings {
   private DefaultSettings: Settings;
   private UrlSettings: Settings;
 
-  constructor(private location: Location) {
+  constructor(private location: Location, private route: ActivatedRoute) {
 
     const settings = localStorage.getItem('settings');
-    const localSetting = window.location.hash.slice(2);
 
     try {
       this.DefaultSettings = JSON.parse(settings);
@@ -28,8 +28,35 @@ export class appSettings {
     }
 
     try {
-      const decodeSettings = decodeURI(localSetting);
-      this.UrlSettings = JSON.parse(decodeSettings);
+
+      this.UrlSettings = {} as Settings;
+
+      this.route.queryParams.subscribe(params => {
+
+        this.UrlSettings.CallID = params['CallID'];
+        this.UrlSettings.SelectedTabIndex = params['SelectedTab'];
+
+        const openHistory = params['OpenHistory'];
+
+        if (openHistory === 'true') {
+          this.UrlSettings.HistoryOpenDefaultPosition = true;
+        }
+        if (openHistory === 'false') {
+          this.UrlSettings.HistoryOpenDefaultPosition = false;
+        }
+
+        const stickyTags: string = params['StickyTags'];
+        if (stickyTags) {
+          this.UrlSettings.StickyTags = stickyTags.split(',');
+        }
+        const SelectedFelids: string = params['SelectedFelids'];
+        if (SelectedFelids) {
+          this.UrlSettings.SelectedFelids = SelectedFelids.split(',');
+        }
+
+
+      });
+
     } catch { }
     finally {
       if (!this.UrlSettings) {
@@ -44,7 +71,15 @@ export class appSettings {
   }
 
   public saveLocal() {
-    this.location.replaceState('/' + JSON.stringify(this.UrlSettings));
+
+    let query: string;
+    query = this.UrlSettings.CallID ? `?CallID=${this.UrlSettings.CallID}` : ``;
+    query += this.UrlSettings.HistoryOpenDefaultPosition !== undefined ? `&OpenHistory=${this.UrlSettings.HistoryOpenDefaultPosition}` : ``;
+    query += this.UrlSettings.SelectedTabIndex ? `&SelectedTab=${this.UrlSettings.SelectedTabIndex}` : ``;
+    query += this.UrlSettings.StickyTags ? `&StickyTags=${this.UrlSettings.StickyTags.join(`,`)}` : ``;
+    query += this.UrlSettings.SelectedFelids ? `&SelectedFelids=${this.UrlSettings.SelectedFelids.join(`,`)}` : ``;
+
+    this.location.replaceState('/' + query);
   }
 
   public clear() {
@@ -88,7 +123,13 @@ export class appSettings {
   }
 
   public GetHistoryOpenDefaultPosition() {
-    return this.UrlSettings.HistoryOpenDefaultPosition || this.DefaultSettings.HistoryOpenDefaultPosition || true;
+    if (this.UrlSettings.HistoryOpenDefaultPosition !== undefined) {
+      return this.UrlSettings.HistoryOpenDefaultPosition;
+    }
+    if (this.DefaultSettings.HistoryOpenDefaultPosition !== undefined) {
+      return this.DefaultSettings.HistoryOpenDefaultPosition;
+    }
+    return true;
   }
 
   public SetHistoryOpenDefaultPosition(historyOpenDefaultPosition: boolean) {
@@ -130,7 +171,6 @@ export class appSettings {
 }
 export class Settings {
   StickyTags: string[];
-  // HistoryRecords: historyRecord[];
   HistoryOpenDefaultPosition: boolean;
   SelectedFelids: string[];
   SelectedTabIndex: number;

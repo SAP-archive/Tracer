@@ -3,7 +3,7 @@ import * as mermaid from 'mermaid';
 import { EventModel, Direction } from '../model/event-model';
 import { MatDialog } from '@angular/material/dialog';
 import { SequenceDiagramDialogComponent } from '../sequence-diagram-dialog/sequence-diagram-dialog.component';
-import { ScrollingVisibility } from '@angular/cdk/overlay';
+import { ScrollingVisibility, ScrollDispatcher, CdkScrollable } from '@angular/cdk/overlay';
 
 interface Dictionary<T> {
   [Key: string]: T;
@@ -64,7 +64,6 @@ export class SequenceDiagramComponent implements OnInit {
       return value;
     };
 
-
     orderedEvents.forEach(event => {
       const t = event.durationMs > 1000 ? `${Math.round(event.durationMs / 1000 * 100) / 100} sec` : Math.round(event.durationMs) + ' ms';
       const time: string = !event.metadata.isFake && event.durationMs && event.durationMs !== 0 ? ` ⌛ ${t}` : ``;
@@ -120,8 +119,9 @@ export class SequenceDiagramComponent implements OnInit {
         text1.textContent = element.children[0].textContent.replace('_0_', ' ');
 
       }
-    }
 
+      this.FixedHeader(0);
+    }
     const texts = document.querySelectorAll('.messageText');
 
     for (let i = 0; i < texts.length; i++) {
@@ -141,10 +141,42 @@ export class SequenceDiagramComponent implements OnInit {
 
       }
     }
-
   }
 
-  constructor(private dialog: MatDialog) { }
+  public FixedHeader(scrollTop) {
+    const hideScroll = document.getElementById('hideScroll');
+    const actors = Array.from(document.getElementsByClassName('actor'));
+    const scrollTopRect: number = scrollTop + 0;
+    const scrollTopText: number = scrollTop + 32;
+    if (!hideScroll && actors && actors.length > 0) {
+      //<rect x="0" y="1995.96533203125" fill="#303030" width="15022" height="65" rx="3" ry="0"></rect>
+      const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      const firstBottomActor = actors.length / 4 * 2;
+      actors[firstBottomActor].parentElement.insertBefore(rect, actors[firstBottomActor]);
+      const height = (Number.parseInt(actors[0].getAttribute('height')) + 30).toString();
+      const svgSize = actors[firstBottomActor].parentElement.parentElement.getAttribute('width');
+
+      rect.setAttribute('x', '0');
+      rect.setAttribute('y', scrollTopRect.toString());
+      rect.setAttribute('fill', '#303030');
+      rect.setAttribute('width', svgSize);
+      rect.setAttribute('height', height);
+      rect.setAttribute('id', 'hideScroll');
+    }
+    if (hideScroll) {
+      hideScroll.setAttribute('y', (scrollTopRect - 20).toString());
+    }
+
+    actors.forEach(x => {
+      if (x.nodeName === 'rect') {
+        x.setAttribute('y', scrollTopRect.toString());
+      } else {
+        x.setAttribute('y', scrollTopText.toString());
+      }
+    });
+  }
+
+  constructor(private dialog: MatDialog, public  scroll: ScrollDispatcher) { }
 
   ngOnInit() {
 
@@ -153,7 +185,20 @@ export class SequenceDiagramComponent implements OnInit {
       sequence: { actorMargin: 50, useMaxWidth: false },
       startOnLoad: false
     });
+    const tabGroup = document.getElementById('tabGroup');
 
+
+    this.scroll
+    .scrolled(4)
+    .subscribe((data: CdkScrollable) => {
+      const start = tabGroup.offsetTop + 50;
+      const scrollTop = data.getElementRef().nativeElement.scrollTop;
+      if (start > scrollTop) {
+      this.FixedHeader(0);
+      } else {
+      this.FixedHeader(scrollTop - start);
+      }
+    });
   }
 }
 
