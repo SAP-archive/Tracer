@@ -96,8 +96,8 @@ export class MainComponent implements OnInit {
       // Optimistic locking
       if (currentOperation === this.CallID && currentSearchType === this.searchType) {
 
-        const remoteCall = this.orderManagerService.GetRemoteCall(rawEvent);
-        const sortRemoteCall = this.orderManagerService.SortRemoteCall(remoteCall);
+        const remoteCall = this.orderManagerService.CreateMetaDataAndLookUp(rawEvent);
+        const orderByHierarchy = this.orderManagerService.BuildHierarchy(remoteCall);
         let maxDate: Date;
         let minDate: Date;
         this.CallID = currentOperation;
@@ -110,7 +110,7 @@ export class MainComponent implements OnInit {
         this.rawEvents = { CallID: this.CallID, value: rawEvent, startTime: minDate, endTime: maxDate };
         this.events = rawEvent;
         this.formattedRawEvent = rawEvent;
-        this.orderEvents = sortRemoteCall;
+        this.orderEvents = orderByHierarchy;
 
       }
     } catch (error) {

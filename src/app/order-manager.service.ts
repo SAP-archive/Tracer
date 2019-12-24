@@ -1,28 +1,16 @@
-import { EventModel, Direction, metadata } from './model/event-model';
+import { EventModel, Direction, Metadata } from './model/event-model';
 import { Injectable } from '@angular/core';
 interface Dictionary<T> {
   [Key: string]: T;
 }
 
-
 const getRequestDestination = (event: EventModel) => {
-  if (event.spanId) {
-    return `${event.direction}_${event.spanId}_${event.metadata.count}`;
-  } else { // To support broken event
-    return `${event.from.name && event.from.name.toLowerCase()}->${event.to && event.to.name && event.to.name.toLowerCase()
-      }:.${event.direction}_${event.spanId}_${event.metadata.count}`;
-  }
+  return `${event.direction}_${event.spanId}_${event.metadata.count}`;
 };
 
 const getRequestOppositeDestination = (event: EventModel) => {
   const direction = event.direction === Direction.RequestTwoWay ? Direction.ResponseTwoWay : Direction.RequestTwoWay;
-
-  if (event.spanId) {
-    return `${direction}_${event.spanId}_${event.metadata.count}`;
-  } else { // To support broken event
-    return `${event.to && event.to.name && event.to.name.toLowerCase()
-      }->${event.from.name && event.from.name.toLowerCase()}:.${direction}_${event.spanId}_${event.metadata.count}`;
-  }
+  return `${direction}_${event.spanId}_${event.metadata.count}`;
 };
 
 @Injectable({
@@ -33,66 +21,96 @@ const getRequestOppositeDestination = (event: EventModel) => {
 export class OrderManagerService {
   constructor() { }
 
-  GetRemoteCall(events: EventModel[]): Dictionary<EventModel> {
-    const dictionary: Dictionary<EventModel> = {};
-
+  private DeleteUserMetadata(events: EventModel[]) {
     // ignore the user metadata
     events.forEach(element => {
       delete element['metadata'];
     });
-
-    let count: number = 1;
+  }
+  private CreateMetadata(events: EventModel[]) {
+    // ignore the user metadata
     events.forEach(x => {
-      x.metadata = { startedAtMs: new Date(x.startedAt).getTime() } as metadata;
+      x.metadata = { startedAtMs: new Date(x.startedAt).getTime() } as Metadata;
     });
+  }
 
+  private CreateLookUp(events: EventModel[]): Dictionary<EventModel> {
+    const dictionary: Dictionary<EventModel> = {};
+    let count: number = 1;
 
     events = events.sort((a, b) => a.metadata.startedAtMs - b.metadata.startedAtMs);
-    const requests: EventModel[] = events.filter((event) => (event.from && event.from.name) && event.to
-    ) as EventModel[];
 
-    requests.forEach(request => {
-      let id: string = getRequestDestination(request);
+    events.forEach(event => {
+      let id: string = getRequestDestination(event);
 
       // support duplicate event
       if (dictionary[id]) {
-        request.metadata.count = count++;
-        id = getRequestDestination(request);
+        event.metadata.count = count++;
+        id = getRequestDestination(event);
       }
 
-      dictionary[id] = request;
+      dictionary[id] = event;
     });
-
-    requests.filter(x => x.direction === Direction.RequestTwoWay || x.direction === Direction.ResponseTwoWay).forEach(request => {
-      const id: string = getRequestOppositeDestination(request);
-      let clientRequest: EventModel = dictionary[id];
-      if (!clientRequest) {
-        clientRequest = {
-          direction: request.direction === Direction.RequestTwoWay ? Direction.ResponseTwoWay : Direction.RequestTwoWay,
-          spanId: request.spanId,
-          parentSpanId: request.parentSpanId,
-          from: request.to,
-          to: request.from,
-          action: request.action,
-          startedAt: request.startedAt,
-          metadata: {
-            startedAtMs: request.metadata.startedAtMs,
-            count: request.metadata.count,
-            isFake: true,
-          }
-        } as EventModel;
-        dictionary[id] = clientRequest;
-      }
-    });
-
 
     return dictionary;
   }
 
-  SortRemoteCall(events: Dictionary<EventModel>): EventModel[] {
+  private CopyDestinationAndTarget(A: EventModel, B: EventModel) {
+    switch (A.direction) {
+      case Direction.RequestTwoWay:
+        A.to = B.from;
+        break;
+      case Direction.ResponseTwoWay:
+        B.to = A.from;
+        break;
+    }
+  }
+
+  private CreateFakeEvent(oppositeEvent: EventModel): EventModel {
+    return {
+      direction: oppositeEvent.direction === Direction.RequestTwoWay ? Direction.ResponseTwoWay : Direction.RequestTwoWay,
+      spanId: oppositeEvent.spanId,
+      parentSpanId: oppositeEvent.parentSpanId,
+      from: oppositeEvent.to,
+      to: oppositeEvent.from,
+      action: oppositeEvent.action,
+      startedAt: oppositeEvent.startedAt,
+      metadata: {
+        startedAtMs: oppositeEvent.metadata.startedAtMs,
+        count: oppositeEvent.metadata.count,
+        isFake: true,
+      }
+    } as EventModel;
+  }
+
+
+  private CreateOppositeEventMetadata(dictionary: Dictionary<EventModel>, events: EventModel[]) {
+    events.filter(x => x.direction === Direction.RequestTwoWay || x.direction === Direction.ResponseTwoWay)
+    .forEach(event => {
+
+      const oppositeEventId: string = getRequestOppositeDestination(event);
+      const oppositeEvent: EventModel = dictionary[oppositeEventId];
+
+      if (oppositeEvent) {
+        this.CopyDestinationAndTarget(event, oppositeEvent);
+      } else {
+        dictionary[oppositeEventId] = this.CreateFakeEvent(event);
+      }
+    });
+  }
+
+  CreateMetaDataAndLookUp(events: EventModel[]): Dictionary<EventModel> {
+    this.DeleteUserMetadata(events);
+    this.CreateMetadata(events);
+    const dictionary = this.CreateLookUp(events);
+    this.CreateOppositeEventMetadata(dictionary, events);
+    return dictionary;
+  }
+
+  BuildHierarchy(events: Dictionary<EventModel>): EventModel[] {
     const flowSeen: any = {};
 
-    const requestToOtherSystems: EventModel[] = Object.keys(events).map(x => events[x])
+    const rootsCandidate: EventModel[] = Object.keys(events).map(x => events[x])
       .filter(event => event.direction === Direction.RequestTwoWay
         || event.direction === Direction.RequestOneWay
         || event.direction === Direction.ResponseOneWay);
@@ -103,18 +121,18 @@ export class OrderManagerService {
     let hasMissingFlows: Boolean = true;
     const visitRoots: EventModel[] = [];
     //  More Root can be added later if not connected to the root span chain
-    const roots = requestToOtherSystems.filter(event => !event.parentSpanId)
+    const roots = rootsCandidate.filter(event => !event.parentSpanId)
       .sort((a, b) => b.metadata.startedAtMs - a.metadata.startedAtMs);
 
     while (hasMissingFlows) {
       if (roots.length !== 0) {
         const root = roots.pop();
         visitRoots.push(root);
-        const result = this.sortByFlowHierarchy(root, events, flowSeen, requestToOtherSystems);
+        const result = this.BuildRootHierarchy(root, events, flowSeen, rootsCandidate);
         output = output.concat(result);
       } else {
         // when your log is events that not order by Hierarchy we need to do best effort to extract them
-        const missingEvent = requestToOtherSystems.
+        const missingEvent = rootsCandidate.
           filter(event => !flowSeen[event.spanId] && visitRoots.findIndex(x => x === event) === -1)
           .sort((a, b) => a.metadata.startedAtMs - b.metadata.startedAtMs);
         if (missingEvent && missingEvent.length > 0) {
@@ -128,7 +146,7 @@ export class OrderManagerService {
   }
 
   // sort the events according to flow hierarchy
-  sortByFlowHierarchy(root: EventModel, events: Dictionary<EventModel>, flowSeen: any, requestToOtherSystems: EventModel[]) {
+  private BuildRootHierarchy(root: EventModel, events: Dictionary<EventModel>, flowSeen: any, requestToOtherSystems: EventModel[]) {
     const output: EventModel[] = [];
     const orderedFlows: EventModel[] = [];
     orderedFlows.push(root);

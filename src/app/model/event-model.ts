@@ -10,7 +10,7 @@ export class EventModel {
   public startedAt: Date;
   public durationMs: number;
   public direction: Direction;
-  public metadata: metadata;
+  public metadata: Metadata;
   constructor() {
     this.from = {} as Server;
     this.to = {} as Server;
@@ -24,7 +24,7 @@ export interface Server {
   version: string;
 }
 
-export interface metadata {
+export interface Metadata {
   generateParentSpanId: boolean;
   isFake: boolean;
   count: number;
@@ -32,7 +32,9 @@ export interface metadata {
   serverStartAfterClient: number;
   startedAtMs: number;
 }
-
+// Some time we need to change the span or span id from the original format think if all the Tracer will be
+// inside of wrrper like Metadata
+/// 'CLIENT': 'SERVER':  'PRODUCER':  'CONSUMER': log? what the right expirations?
 export enum Direction {
   RequestTwoWay, ResponseTwoWay, RequestOneWay, ResponseOneWay
 }
