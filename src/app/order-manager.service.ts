@@ -194,7 +194,7 @@ class ServerNameToEvents {
       this.Lookup[event.spanId] = A;
       if (event.direction === Direction.RequestOneWay || event.direction === Direction.RequestTwoWay) {
         A.push(event.to);
-      }  else {
+      } else {
         A.push(event.from);
       }
     }
@@ -204,7 +204,7 @@ class ServerNameToEvents {
       this.Lookup[event.parentSpanId] = A;
       if (event.direction === Direction.RequestOneWay || event.direction === Direction.RequestTwoWay) {
         A.push(event.from);
-      }  else {
+      } else {
         A.push(event.to);
       }
     }
@@ -227,7 +227,7 @@ class ServerNameToEvents {
   }
 
   public EnrichMetadataServerName() {
-
+    const nameToNickNames: Dictionary<string> = {};
     Object.keys(this.Lookup).forEach(server => {
 
       let nickName: string;
@@ -235,9 +235,19 @@ class ServerNameToEvents {
         if (!nickName && event && event.name) {
           nickName = event.name;
         }
+        if (event && event.name && nameToNickNames[event.name]) {
+          nickName = nameToNickNames[event.name];
+        }
       });
+
+
+
       this.Lookup[server].forEach(event => {
         event.nickName = nickName;
+        // set nickname
+        if (event && event.name && nameToNickNames[event.name]) {
+          nameToNickNames[event.nickName] = nickName;
+        }
       });
     });
   }

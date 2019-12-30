@@ -44,7 +44,8 @@ export class ZipkinService implements Search {
     result.spanId = zapkinSpan.id;
     result.startedAt = zapkinSpan.timestamp && new Date(zapkinSpan.timestamp);
     result.from.name = zapkinSpan.localEndpoint && (zapkinSpan.localEndpoint.serviceName || zapkinSpan.localEndpoint['ipv4']);
-    result.to.name = zapkinSpan.remoteEndpoint && (zapkinSpan.remoteEndpoint.serviceName || zapkinSpan.remoteEndpoint['ipv4']);
+    result.to.name = zapkinSpan.remoteEndpoint && (zapkinSpan.remoteEndpoint.serviceName
+      || zapkinSpan.remoteEndpoint['ipv4']);
     // add ip4 extra
     switch (zapkinSpan.kind) {
       case 'CLIENT': result.direction = 0; break;
@@ -53,11 +54,18 @@ export class ZipkinService implements Search {
       case 'CONSUMER': result.direction = 3; break;
       // LOG
       case undefined:
-        result.direction = Direction.RequestOneWay;
-        result.parentSpanId = result.spanId;
-        result.spanId = this.uniq();
-        result['isLog'] = true;
-        result.to = result.from;
+        if (!result.parentSpanId) {
+          result.parentSpanId = result.spanId;
+        }
+
+        if (!result.to.name) {
+          result.direction = Direction.RequestOneWay;
+          result.to.name = result.from.name;
+          result['isLog'] = true;
+
+        } else {
+          result.direction = Direction.RequestTwoWay;
+        }
         break;
     }
     return result;

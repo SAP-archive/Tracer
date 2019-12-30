@@ -66,7 +66,7 @@ export class MainComponent implements OnInit {
       this.selectedCallID = callID;
       this.init(c => Promise.resolve(this.settings.GetHistoryRecords()[index].result));
     } else {
-      console.warn(environment.searchProvider.url);
+
       if (environment.searchProvider.url === 'http://YourSearchService.com/v1/Search') {
         this.error = 'Configuration required.'
           + '\n To enable search, please configure connection to the source of logs / events.'
@@ -137,7 +137,6 @@ export class MainComponent implements OnInit {
       this.loading = false;
       return;
     }
-    console.warn(environment.searchProvider.url);
 
     if (environment.searchProvider.url === 'http://YourSearchService.com/v1/Search') {
       this.error = 'Configuration required.'
