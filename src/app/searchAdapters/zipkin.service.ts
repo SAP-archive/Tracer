@@ -3,6 +3,7 @@ import { Search } from './search';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from 'src/environments/environment.prod';
 import { EventModel, Direction } from '../model/event-model';
+import { request } from 'http';
 interface Dictionary<T> {
   [Key: string]: T;
 }
@@ -21,7 +22,6 @@ export class ZipkinService implements Search {
       const fromName: Dictionary<string> = {};
 
 
-      addMissingDestintionName(results, fromName);
 
       return results;
     } catch (error) {
@@ -43,9 +43,9 @@ export class ZipkinService implements Search {
     result.durationMs = zapkinSpan.duration && zapkinSpan.duration / 1000;
     result.parentSpanId = zapkinSpan.parentId;
     result.spanId = zapkinSpan.id;
-    result.startedAt = new Date(zapkinSpan.timestamp);
-    result.from.name = zapkinSpan.localEndpoint && zapkinSpan.localEndpoint.serviceName;
-    result.to.name = zapkinSpan.remoteEndpoint && zapkinSpan.remoteEndpoint.serviceName;
+    result.startedAt = zapkinSpan.timestamp && new Date(zapkinSpan.timestamp);
+    result.from.name = zapkinSpan.localEndpoint && (zapkinSpan.localEndpoint.serviceName || zapkinSpan.localEndpoint['ipv4']);
+    result.to.name = zapkinSpan.remoteEndpoint && (zapkinSpan.remoteEndpoint.serviceName || zapkinSpan.remoteEndpoint['ipv4']);
     // add ip4 extra
     switch (zapkinSpan.kind) {
       case 'CLIENT': result.direction = 0; break;
@@ -58,6 +58,7 @@ export class ZipkinService implements Search {
         result.parentSpanId = result.spanId;
         result.spanId = this.uniq();
         result['isLog'] = true;
+        result.to = result.from;
         break;
     }
     return result;
@@ -97,23 +98,6 @@ export interface Endpoint {
   ipv4: string;
   ipv6: string;
   port: number;
-}
-function addMissingDestintionName(results: EventModel[], fromName: Dictionary<string>) {
-  //event["parentId"] we change the event in case of log
-  results.forEach(event => {
-    if (event.from && event.from.name && event["parentId"]) {
-      fromName[event["parentId"]] = event.from.name;
-    }
-  });
-  results.forEach(event => {
-    if (!event.from.name && event["parentId"]) {
-      event.from.name = fromName[event["parentId"]];
 
-    }
-    if (event['isLog'] &&event["parentId"]) {
-      event.to.name = fromName[event["parentId"]];
-    }
-
-  });
 }
 

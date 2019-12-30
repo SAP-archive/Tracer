@@ -1,4 +1,4 @@
-import { EventModel, Direction, Metadata } from './model/event-model';
+import { EventModel, Direction, Metadata, Server } from './model/event-model';
 import { Injectable } from '@angular/core';
 interface Dictionary<T> {
   [Key: string]: T;
@@ -36,7 +36,7 @@ export class OrderManagerService {
 
   private CreateLookUp(events: EventModel[]): Dictionary<EventModel> {
     const dictionary: Dictionary<EventModel> = {};
-    let count: number = 1;
+    let count = 1;
 
     events = events.sort((a, b) => a.metadata.startedAtMs - b.metadata.startedAtMs);
 
@@ -84,31 +84,30 @@ export class OrderManagerService {
   }
 
 
-  private CreateOppositeEventMetadata(dictionary: Dictionary<EventModel>, events: EventModel[]) {
+  private CreateOppositeEvent(dictionary: Dictionary<EventModel>, events: EventModel[]) {
     events.filter(x => x.direction === Direction.RequestTwoWay || x.direction === Direction.ResponseTwoWay)
-    .forEach(event => {
+      .forEach(event => {
 
-      const oppositeEventId: string = getRequestOppositeDestination(event);
-      const oppositeEvent: EventModel = dictionary[oppositeEventId];
+        const oppositeEventId: string = getRequestOppositeDestination(event);
+        const oppositeEvent: EventModel = dictionary[oppositeEventId];
 
-      if (oppositeEvent) {
-        this.CopyDestinationAndTarget(event, oppositeEvent);
-      } else {
-        dictionary[oppositeEventId] = this.CreateFakeEvent(event);
-      }
-    });
+        if (!oppositeEvent) {
+          dictionary[oppositeEventId] = this.CreateFakeEvent(event);
+        }
+      });
   }
 
   CreateMetaDataAndLookUp(events: EventModel[]): Dictionary<EventModel> {
     this.DeleteUserMetadata(events);
     this.CreateMetadata(events);
     const dictionary = this.CreateLookUp(events);
-    this.CreateOppositeEventMetadata(dictionary, events);
+    this.CreateOppositeEvent(dictionary, events);
     return dictionary;
   }
 
   BuildHierarchy(events: Dictionary<EventModel>): EventModel[] {
     const flowSeen: any = {};
+    const ServerNameToNode: ServerNameToEvents = new ServerNameToEvents();
 
     const rootsCandidate: EventModel[] = Object.keys(events).map(x => events[x])
       .filter(event => event.direction === Direction.RequestTwoWay
@@ -128,7 +127,7 @@ export class OrderManagerService {
       if (roots.length !== 0) {
         const root = roots.pop();
         visitRoots.push(root);
-        const result = this.BuildRootHierarchy(root, events, flowSeen, rootsCandidate);
+        const result = this.BuildRootHierarchy(root, events, flowSeen, rootsCandidate, ServerNameToNode);
         output = output.concat(result);
       } else {
         // when your log is events that not order by Hierarchy we need to do best effort to extract them
@@ -142,17 +141,21 @@ export class OrderManagerService {
         }
       }
     }
+    ServerNameToNode.EnrichMetadataServerName();
     return output;
   }
 
   // sort the events according to flow hierarchy
-  private BuildRootHierarchy(root: EventModel, events: Dictionary<EventModel>, flowSeen: any, requestToOtherSystems: EventModel[]) {
+  // It also build another hierarchy that map each event to server to create single nickname for server
+  private BuildRootHierarchy(root: EventModel, events: Dictionary<EventModel>,
+    flowSeen: any, requestToOtherSystems: EventModel[], serverToNodes: ServerNameToEvents) {
     const output: EventModel[] = [];
     const orderedFlows: EventModel[] = [];
     orderedFlows.push(root);
     while (orderedFlows.length > 0) {
       const flow: EventModel = orderedFlows.pop();
       output.push(flow);
+      serverToNodes.AddNode(flow);
       // check if this flow has a closing event
       if (flow.direction !== Direction.ResponseTwoWay) {
         const closeEventId: string = getRequestOppositeDestination(flow);
@@ -177,6 +180,66 @@ export class OrderManagerService {
 
     // missing all event the not seen
     return output;
+  }
+
+}
+
+class ServerNameToEvents {
+  Lookup: Dictionary<Server[]> = {};
+  public AddNode(event: EventModel) {
+    if (!(event.parentSpanId || event.spanId)) { return; }
+
+    if (event.spanId) {
+      const A = this.Lookup[event.spanId] || [] as Server[];
+      this.Lookup[event.spanId] = A;
+      if (event.direction === Direction.RequestOneWay || event.direction === Direction.RequestTwoWay) {
+        A.push(event.to);
+      }  else {
+        A.push(event.from);
+      }
+    }
+
+    if (event.parentSpanId) {
+      const A = this.Lookup[event.parentSpanId] || [] as Server[];
+      this.Lookup[event.parentSpanId] = A;
+      if (event.direction === Direction.RequestOneWay || event.direction === Direction.RequestTwoWay) {
+        A.push(event.from);
+      }  else {
+        A.push(event.to);
+      }
+    }
+
+  }
+  insertToLookup(event: EventModel, span: string, isParent: boolean) {
+    const A = this.Lookup[span] || [] as Server[];
+    this.Lookup[span] = A;
+
+
+    if (event.direction === Direction.RequestOneWay || event.direction === Direction.RequestTwoWay) {
+      A.push(event.from);
+      A.push(event.to);
+    } else {
+      if (isParent) {
+        A.push(event.to);
+      } // client event of parent is good for Child, but child not intrest the parent
+      A.push(event.from);
+    }
+  }
+
+  public EnrichMetadataServerName() {
+
+    Object.keys(this.Lookup).forEach(server => {
+
+      let nickName: string;
+      this.Lookup[server].forEach(event => {
+        if (!nickName && event && event.name) {
+          nickName = event.name;
+        }
+      });
+      this.Lookup[server].forEach(event => {
+        event.name = nickName;
+      });
+    });
   }
 
 }
