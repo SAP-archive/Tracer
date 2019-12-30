@@ -71,8 +71,8 @@ export class SequenceDiagramComponent implements OnInit {
       let action = event.action;
 
 
-      const from = saveSameCasing(escape(event.from.name));
-      const to = saveSameCasing(escape(event.to.name));
+      const from = saveSameCasing(escape(event.from.nickName || event.from.name));
+      const to = saveSameCasing(escape(event.to.nickName || event.to.name));
       action = escape(action);
 
       let lineType = '';

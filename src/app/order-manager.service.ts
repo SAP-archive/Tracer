@@ -237,7 +237,7 @@ class ServerNameToEvents {
         }
       });
       this.Lookup[server].forEach(event => {
-        event.name = nickName;
+        event.nickName = nickName;
       });
     });
   }

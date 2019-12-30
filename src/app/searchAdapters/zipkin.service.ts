@@ -1,9 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Search } from './search';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpErrorResponse, HttpResponseBase } from '@angular/common/http';
 import { environment } from 'src/environments/environment.prod';
 import { EventModel, Direction } from '../model/event-model';
-import { request } from 'http';
 interface Dictionary<T> {
   [Key: string]: T;
 }
@@ -15,18 +14,18 @@ export class ZipkinService implements Search {
   constructor(private httpClient: HttpClient) { }
 
   async Get(callID: string): Promise<EventModel[]> {
-    const url = `${environment.zipkinUrl}/api/v2/trace/${callID}`;
+    const url = `${environment.searchProvider.url}/api/v2/trace/${callID}`;
     try {
       const zapkinResponse = await this.httpClient.get<Zipkin[]>(url).toPromise();
       const results = zapkinResponse.map(x => this.Convert(x));
-      const fromName: Dictionary<string> = {};
-
 
 
       return results;
     } catch (error) {
-      //if 404 return
-      //return [];
+      const ex = error as HttpErrorResponse;
+      if (ex.status === 404) {
+        return null;
+      }
       throw error;
     }
 
@@ -52,7 +51,7 @@ export class ZipkinService implements Search {
       case 'SERVER': result.direction = 1; break;
       case 'PRODUCER': result.direction = 2; break;
       case 'CONSUMER': result.direction = 3; break;
-      // LOG/ metrics -> how to resolve the localEndPoint?
+      // LOG
       case undefined:
         result.direction = Direction.RequestOneWay;
         result.parentSpanId = result.spanId;
@@ -82,10 +81,8 @@ export interface Zipkin {
   kind: string; //  [ CLIENT, SERVER, PRODUCER, CONSUMER ]
   localEndpoint: Endpoint;
   remoteEndpoint: Endpoint;
-  tags: {};
   annotations: Annotation;
   shared: boolean;
-  debug: boolean;
 }
 
 export interface Annotation {
@@ -98,6 +95,5 @@ export interface Endpoint {
   ipv4: string;
   ipv6: string;
   port: number;
-
 }
 

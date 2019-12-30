@@ -19,6 +19,7 @@ export class EventModel {
 
 
 export interface Server {
+  nickName: string;
   host: string;
   name: string;
   version: string;
@@ -31,9 +32,14 @@ export interface Metadata {
   clientEndBeforeServer: number;
   serverStartAfterClient: number;
   startedAtMs: number;
+
+  // The server can have multiple nicknames, we have to find the best name to display
 }
+
+
 // Some time we need to change the span or span id from the original format think if all the Tracer will be
-// inside of wrrper like Metadata
+// inside of additional name space like Tracer.CallID
+
 /// 'CLIENT': 'SERVER':  'PRODUCER':  'CONSUMER': log? what the right expirations?
 export enum Direction {
   RequestTwoWay, ResponseTwoWay, RequestOneWay, ResponseOneWay

@@ -36,7 +36,7 @@ export class MenuComponent implements OnInit {
       const deepClone: EventModel[] = JSON.parse(JSON.stringify(this._rawEvents.value));
       // Remove metadata
       deepClone.forEach(element => {
-       delete element['metadata'];
+        delete element['metadata'];
       });
 
       const myObjStr: string = JSON.stringify(deepClone, null, 2);
@@ -66,7 +66,9 @@ export class MenuComponent implements OnInit {
   }
 
   updateLinkList() {
-    if (this.linksRaw && this.linksRaw.length > 0 && this._rawEvents && this._rawEvents.CallID) {
+    if (this.linksRaw && this.linksRaw.length > 0 && this._rawEvents && this._rawEvents.CallID
+      && this._rawEvents.startTime && this._rawEvents.startTime.getTime() !== NaN
+      && this._rawEvents.endTime && this._rawEvents.endTime.getTime() !== NaN) {
       this.links = this.linksRaw.map(x => ({
         name: x.name, link: x.link
           .replace('{callID}', this._rawEvents.CallID.toString())
@@ -83,6 +85,7 @@ export class MenuComponent implements OnInit {
     return new Date(date.getTime() + (secund * 1000));
 
   }
+
 
 
   SaveLayout() {

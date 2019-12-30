@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { EventModel } from './model/event-model';
 import { environment } from 'src/environments/environment';
 import { ZipkinService } from './searchAdapters/zipkin.service';
@@ -13,13 +13,22 @@ export class SearchService {
   constructor(private httpClient: HttpClient, private zipkinAdapter: ZipkinService) { }
 
   public async GetFlow(callID: string, aggregate: boolean): Promise<EventModel[]> {
-    if (environment.zipkinUrl != null) {
+    if (environment.searchProvider.name === 'zipkin') {
       return this.zipkinAdapter.Get(callID);
     }
 
-    const url = `${environment.searchServiceUrl}?callID=${callID}&aggregate=${aggregate}`;
-    return await this.httpClient.get<EventModel[]>(url).toPromise();
+    const url = `${environment.searchProvider.url}?callID=${callID}&aggregate=${aggregate}`;
+    try {
+      return await this.httpClient.get<EventModel[]>(url).toPromise();
+
+    } catch (error) {
+      const ex = error as HttpErrorResponse;
+      if (ex.status === 404) {
+        return null;
+      }
+      throw error;
+    }
   }
-
-
 }
+
+
