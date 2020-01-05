@@ -1,16 +1,16 @@
-import { EventModel, Direction, Metadata, Server } from './model/event-model';
+import { EventModel, Direction, Metadata, Server, Tracer } from './model/event-model';
 import { Injectable } from '@angular/core';
 interface Dictionary<T> {
   [Key: string]: T;
 }
 
 const getRequestDestination = (event: EventModel) => {
-  return `${event.direction}_${event.spanId}_${event.metadata.count}`;
+  return `${event.tracer.direction}_${event.tracer.spanId}_${event.tracer.metadata.count}`;
 };
 
 const getRequestOppositeDestination = (event: EventModel) => {
-  const direction = event.direction === Direction.RequestTwoWay ? Direction.ResponseTwoWay : Direction.RequestTwoWay;
-  return `${direction}_${event.spanId}_${event.metadata.count}`;
+  const direction = event.tracer.direction === Direction.RequestTwoWay ? Direction.ResponseTwoWay : Direction.RequestTwoWay;
+  return `${direction}_${event.tracer.spanId}_${event.tracer.metadata.count}`;
 };
 
 @Injectable({
@@ -30,7 +30,7 @@ export class OrderManagerService {
   private CreateMetadata(events: EventModel[]) {
     // ignore the user metadata
     events.forEach(x => {
-      x.metadata = { startedAtMs: new Date(x.startedAt).getTime() } as Metadata;
+      x.tracer.metadata = { startedAtMs: new Date(x.tracer.startedAt).getTime() } as Metadata;
     });
   }
 
@@ -38,14 +38,14 @@ export class OrderManagerService {
     const dictionary: Dictionary<EventModel> = {};
     let count = 1;
 
-    events = events.sort((a, b) => a.metadata.startedAtMs - b.metadata.startedAtMs);
+    events = events.sort((a, b) => a.tracer.metadata.startedAtMs - b.tracer.metadata.startedAtMs);
 
     events.forEach(event => {
       let id: string = getRequestDestination(event);
 
       // support duplicate event
       if (dictionary[id]) {
-        event.metadata.count = count++;
+        event.tracer.metadata.count = count++;
         id = getRequestDestination(event);
       }
 
@@ -55,37 +55,30 @@ export class OrderManagerService {
     return dictionary;
   }
 
-  private CopyDestinationAndTarget(A: EventModel, B: EventModel) {
-    switch (A.direction) {
-      case Direction.RequestTwoWay:
-        A.to = B.from;
-        break;
-      case Direction.ResponseTwoWay:
-        B.to = A.from;
-        break;
-    }
-  }
+
 
   private CreateFakeEvent(oppositeEvent: EventModel): EventModel {
     return {
-      direction: oppositeEvent.direction === Direction.RequestTwoWay ? Direction.ResponseTwoWay : Direction.RequestTwoWay,
-      spanId: oppositeEvent.spanId,
-      parentSpanId: oppositeEvent.parentSpanId,
-      from: oppositeEvent.to,
-      to: oppositeEvent.from,
-      action: oppositeEvent.action,
-      startedAt: oppositeEvent.startedAt,
-      metadata: {
-        startedAtMs: oppositeEvent.metadata.startedAtMs,
-        count: oppositeEvent.metadata.count,
-        isFake: true,
-      }
+      tracer: {
+        direction: oppositeEvent.tracer.direction === Direction.RequestTwoWay ? Direction.ResponseTwoWay : Direction.RequestTwoWay,
+        spanId: oppositeEvent.tracer.spanId,
+        parentSpanId: oppositeEvent.tracer.parentSpanId,
+        from: oppositeEvent.tracer.to,
+        to: oppositeEvent.tracer.from,
+        action: oppositeEvent.tracer.action,
+        startedAt: oppositeEvent.tracer.startedAt,
+        metadata: {
+          startedAtMs: oppositeEvent.tracer.metadata.startedAtMs,
+          count: oppositeEvent.tracer.metadata.count,
+          isFake: true,
+        }
+      } as Tracer
     } as EventModel;
   }
 
 
   private CreateOppositeEvent(dictionary: Dictionary<EventModel>, events: EventModel[]) {
-    events.filter(x => x.direction === Direction.RequestTwoWay || x.direction === Direction.ResponseTwoWay)
+    events.filter(x => x.tracer.direction === Direction.RequestTwoWay || x.tracer.direction === Direction.ResponseTwoWay)
       .forEach(event => {
 
         const oppositeEventId: string = getRequestOppositeDestination(event);
@@ -110,9 +103,9 @@ export class OrderManagerService {
     const ServerNameToNode: ServerNameToEvents = new ServerNameToEvents();
 
     const rootsCandidate: EventModel[] = Object.keys(events).map(x => events[x])
-      .filter(event => event.direction === Direction.RequestTwoWay
-        || event.direction === Direction.RequestOneWay
-        || event.direction === Direction.ResponseOneWay);
+      .filter(event => event.tracer.direction === Direction.RequestTwoWay
+        || event.tracer.direction === Direction.RequestOneWay
+        || event.tracer.direction === Direction.ResponseOneWay);
 
     // add all parent flows to ordered flow so we can initiate the processing
 
@@ -120,8 +113,8 @@ export class OrderManagerService {
     let hasMissingFlows: Boolean = true;
     const visitRoots: EventModel[] = [];
     //  More Root can be added later if not connected to the root span chain
-    const roots = rootsCandidate.filter(event => !event.parentSpanId)
-      .sort((a, b) => b.metadata.startedAtMs - a.metadata.startedAtMs);
+    const roots = rootsCandidate.filter(event => !event.tracer.parentSpanId)
+      .sort((a, b) => b.tracer.metadata.startedAtMs - a.tracer.metadata.startedAtMs);
 
     while (hasMissingFlows) {
       if (roots.length !== 0) {
@@ -132,8 +125,8 @@ export class OrderManagerService {
       } else {
         // when your log is events that not order by Hierarchy we need to do best effort to extract them
         const missingEvent = rootsCandidate.
-          filter(event => !flowSeen[event.spanId] && visitRoots.findIndex(x => x === event) === -1)
-          .sort((a, b) => a.metadata.startedAtMs - b.metadata.startedAtMs);
+          filter(event => !flowSeen[event.tracer.spanId] && visitRoots.findIndex(x => x === event) === -1)
+          .sort((a, b) => a.tracer.metadata.startedAtMs - b.tracer.metadata.startedAtMs);
         if (missingEvent && missingEvent.length > 0) {
           roots.push(missingEvent[0]);
         } else {
@@ -157,24 +150,24 @@ export class OrderManagerService {
       output.push(flow);
       serverToNodes.AddNode(flow);
       // check if this flow has a closing event
-      if (flow.direction !== Direction.ResponseTwoWay) {
+      if (flow.tracer.direction !== Direction.ResponseTwoWay) {
         const closeEventId: string = getRequestOppositeDestination(flow);
         const closeEvent = events[closeEventId];
         if (closeEvent) {
           orderedFlows.push(closeEvent);
         }
         // get all child flow
-        const uniqueFlow = flow.spanId && !(flowSeen[flow.spanId]);
+        const uniqueFlow = flow.tracer.spanId && !(flowSeen[flow.tracer.spanId]);
         if (uniqueFlow) {
-          const childFlows = requestToOtherSystems.filter(event => event.parentSpanId === flow.spanId);
+          const childFlows = requestToOtherSystems.filter(event => event.tracer.parentSpanId === flow.tracer.spanId);
           if (childFlows) {
             // order is opposite of stack
-            childFlows.sort((a, b) => b.metadata.startedAtMs - a.metadata.startedAtMs).forEach((child: EventModel) => {
+            childFlows.sort((a, b) => b.tracer.metadata.startedAtMs - a.tracer.metadata.startedAtMs).forEach((child: EventModel) => {
               orderedFlows.push(child);
             });
           }
         }
-        flowSeen[flow.spanId] = 1;
+        flowSeen[flow.tracer.spanId] = 1;
       }
     }
 
@@ -187,25 +180,25 @@ export class OrderManagerService {
 class ServerNameToEvents {
   Lookup: Dictionary<Server[]> = {};
   public AddNode(event: EventModel) {
-    if (!(event.parentSpanId || event.spanId)) { return; }
+    if (!(event.tracer.parentSpanId || event.tracer.spanId)) { return; }
 
-    if (event.spanId) {
-      const A = this.Lookup[event.spanId] || [] as Server[];
-      this.Lookup[event.spanId] = A;
-      if (event.direction === Direction.RequestOneWay || event.direction === Direction.RequestTwoWay) {
-        A.push(event.to);
+    if (event.tracer.spanId) {
+      const A = this.Lookup[event.tracer.spanId] || [] as Server[];
+      this.Lookup[event.tracer.spanId] = A;
+      if (event.tracer.direction === Direction.RequestOneWay || event.tracer.direction === Direction.RequestTwoWay) {
+        A.push(event.tracer.to);
       } else {
-        A.push(event.from);
+        A.push(event.tracer.from);
       }
     }
 
-    if (event.parentSpanId) {
-      const A = this.Lookup[event.parentSpanId] || [] as Server[];
-      this.Lookup[event.parentSpanId] = A;
-      if (event.direction === Direction.RequestOneWay || event.direction === Direction.RequestTwoWay) {
-        A.push(event.from);
+    if (event.tracer.parentSpanId) {
+      const A = this.Lookup[event.tracer.parentSpanId] || [] as Server[];
+      this.Lookup[event.tracer.parentSpanId] = A;
+      if (event.tracer.direction === Direction.RequestOneWay || event.tracer.direction === Direction.RequestTwoWay) {
+        A.push(event.tracer.from);
       } else {
-        A.push(event.to);
+        A.push(event.tracer.to);
       }
     }
 
@@ -215,14 +208,14 @@ class ServerNameToEvents {
     this.Lookup[span] = A;
 
 
-    if (event.direction === Direction.RequestOneWay || event.direction === Direction.RequestTwoWay) {
-      A.push(event.from);
-      A.push(event.to);
+    if (event.tracer.direction === Direction.RequestOneWay || event.tracer.direction === Direction.RequestTwoWay) {
+      A.push(event.tracer.from);
+      A.push(event.tracer.to);
     } else {
       if (isParent) {
-        A.push(event.to);
+        A.push(event.tracer.to);
       } // client event of parent is good for Child, but child not intrest the parent
-      A.push(event.from);
+      A.push(event.tracer.from);
     }
   }
 

@@ -41,7 +41,7 @@ export class MenuComponent implements OnInit {
 
       const myObjStr: string = JSON.stringify(deepClone, null, 2);
       const blob = new Blob([myObjStr], { type: 'text/plain;charset=utf-8' });
-      saveAs(blob, this._rawEvents.CallID + '.json');
+      saveAs(blob, this._rawEvents.traceId + '.json');
     }
   }
 
@@ -66,14 +66,14 @@ export class MenuComponent implements OnInit {
   }
 
   updateLinkList() {
-    if (this.linksRaw && this.linksRaw.length > 0 && this._rawEvents && this._rawEvents.CallID
-      && this._rawEvents.startTime && this._rawEvents.startTime.getTime() !== NaN
-      && this._rawEvents.endTime && this._rawEvents.endTime.getTime() !== NaN) {
+    if (this.linksRaw && this.linksRaw.length > 0 && this._rawEvents && this._rawEvents.traceId
+      && this._rawEvents.startTime && this._rawEvents.startTime.getTime() .toString() !== 'NaN'
+      && this._rawEvents.endTime && this._rawEvents.endTime.getTime().toString() !== 'NaN') {
       this.links = this.linksRaw.map(x => ({
         name: x.name, link: x.link
-          .replace('{callID}', this._rawEvents.CallID.toString())
-          .replace('{startDate}', this.dateFormat.transform(this.addSecund(this._rawEvents.startTime || new Date(), -10), "yyyy-MM-dd'T'HH:mm:ss"))
-          .replace('{endDate}', this.dateFormat.transform(this.addSecund(this._rawEvents.endTime || new Date(), 10), "yyyy-MM-dd'T'HH:mm:ss"))
+          .replace('{traceId}', this._rawEvents.traceId.toString())
+          .replace('{startDate}', this.dateFormat.transform(this.addSecund(this._rawEvents.startTime || new Date(), -10), 'yyyy-MM-dd\'T\'HH:mm:ss'))
+          .replace('{endDate}', this.dateFormat.transform(this.addSecund(this._rawEvents.endTime || new Date(), 10), 'yyyy-MM-dd\'T\'HH:mm:ss'))
       }) as Link);
     } else {
       this.links = [];

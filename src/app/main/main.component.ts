@@ -15,8 +15,8 @@ import { environment } from 'src/environments/environment';
   styleUrls: ['./main.component.css']
 })
 export class MainComponent implements OnInit {
-  public CallID: string;
-  public selectedCallID: string;
+  public traceId: string;
+  public selectedTraceId: string;
   public error: string;
   public note: string;
   public loading: boolean;
@@ -40,11 +40,11 @@ export class MainComponent implements OnInit {
 
   ngOnInit(): void {
     this.SetControlInDefaultState();
-    const callId = this.settings.GetCallID();
-    if (callId) {
+    const traceId = this.settings.GetTraceId();
+    if (traceId) {
       {
-        this.selectedCallID = callId;
-        this.loadFromHistory(callId);
+        this.selectedTraceId = traceId;
+        this.loadFromHistory(traceId);
       }
     }
   }
@@ -58,12 +58,12 @@ export class MainComponent implements OnInit {
     this.SelectedTabIndex = this.settings.GetSelectedTabIndex();
     this.ShowAggregateSearch = environment.ShowAggregateSearch;
   }
-  private loadFromHistory(callID: string) {
-    const index = this.settings.GetHistoryRecords().findIndex(x => x.callID === callID);
+  private loadFromHistory(traceId: string) {
+    const index = this.settings.GetHistoryRecords().findIndex(x => x.traceId === traceId);
     if (index >= 0) { //  exists in history
       this.note = 'Note: history record, press search to reload the data';
-      this.CallID = callID;
-      this.selectedCallID = callID;
+      this.traceId = traceId;
+      this.selectedTraceId = traceId;
       this.init(c => Promise.resolve(this.settings.GetHistoryRecords()[index].result));
     } else {
 
@@ -78,15 +78,15 @@ export class MainComponent implements OnInit {
     }
   }
 
-  private async init(getFlow: (callID: string) => Promise<EventModel[]>) {
+  private async init(getFlow: (traceId: string) => Promise<EventModel[]>) {
 
     this.loading = true;
-    const currentOperation = this.CallID;
+    const currentOperation = this.traceId;
     const currentSearchType = this.searchType;
     try {
       const rawEvent = await getFlow(currentOperation);
       if (rawEvent == null) {
-        if (currentOperation === this.CallID && currentSearchType === this.searchType) {
+        if (currentOperation === this.traceId && currentSearchType === this.searchType) {
           // Optimistic locking
           this.error = 'No result found';
           this.loading = false;
@@ -95,27 +95,27 @@ export class MainComponent implements OnInit {
       }
 
       // Optimistic locking
-      if (currentOperation === this.CallID && currentSearchType === this.searchType) {
+      if (currentOperation === this.traceId && currentSearchType === this.searchType) {
 
         const remoteCall = this.orderManagerService.CreateMetaDataAndLookUp(rawEvent);
         const orderByHierarchy = this.orderManagerService.BuildHierarchy(remoteCall);
         let maxDate: Date;
         let minDate: Date;
-        this.CallID = currentOperation;
+        this.traceId = currentOperation;
         if (rawEvent && rawEvent.length > 0) {
-          const times = rawEvent.map(x => x.metadata.startedAtMs);
+          const times = rawEvent.map(x => x.tracer.metadata.startedAtMs);
           maxDate = new Date(Math.max.apply(Math, times));
           minDate = new Date(Math.min.apply(Math, times));
         }
 
-        this.rawEvents = { CallID: this.CallID, value: rawEvent, startTime: minDate, endTime: maxDate };
+        this.rawEvents = { traceId: this.traceId, value: rawEvent, startTime: minDate, endTime: maxDate };
         this.events = rawEvent;
         this.formattedRawEvent = rawEvent;
         this.orderEvents = orderByHierarchy;
 
       }
     } catch (error) {
-      if (currentOperation === this.CallID && currentSearchType === this.searchType) {
+      if (currentOperation === this.traceId && currentSearchType === this.searchType) {
         // Optimistic locking
         this.handleError(error);
       }
@@ -132,8 +132,8 @@ export class MainComponent implements OnInit {
     this.ClearState();
 
     this.loading = true;
-    if (!this.selectedCallID) {
-      this.error = 'CallID not define';
+    if (!this.selectedTraceId) {
+      this.error = 'TraceId not define';
       this.loading = false;
       return;
     }
@@ -146,11 +146,11 @@ export class MainComponent implements OnInit {
       return;
     }
 
-    this.selectedCallID = this.selectedCallID.trim();
-    this.CallID = this.selectedCallID;
-    this.settings.SetCallID(this.CallID);
+    this.selectedTraceId = this.selectedTraceId.trim();
+    this.traceId = this.selectedTraceId;
+    this.settings.SetTraceId(this.traceId);
 
-    this.CallID = this.selectedCallID;
+    this.traceId = this.selectedTraceId;
     this.init(c => this.searchService.GetFlow(c, this.searchType === '1'));
 
   }
@@ -166,14 +166,14 @@ export class MainComponent implements OnInit {
   }
 
   loadFormHistory(event: historyRecord) {
-    this.settings.SetCallID(event.callID);
+    this.settings.SetTraceId(event.traceId);
 
-    this.selectedCallID = event.callID;
+    this.selectedTraceId = event.traceId;
 
     this.ClearState();
     new Promise(res => setTimeout(res, 1)).then(x => {
       // it in promise due to a bug in memrid
-      this.CallID = event.callID;
+      this.traceId = event.traceId;
 
       this.init(c => Promise.resolve(event.result));
     });
@@ -189,11 +189,11 @@ export class MainComponent implements OnInit {
 
     try {
       const rawEvent: EventModel[] = JSON.parse(fileEvent.content);
-      if (rawEvent && rawEvent.length > 0 && rawEvent[0].callId) {
-        this.CallID = rawEvent[0].callId;
-        this.settings.SetCallID(rawEvent[0].callId);
+      if (rawEvent && rawEvent.length > 0 && rawEvent[0].tracer.traceId) {
+        this.traceId = rawEvent[0].tracer.traceId;
+        this.settings.SetTraceId(rawEvent[0].tracer.traceId);
 
-        this.selectedCallID = rawEvent[0].callId;
+        this.selectedTraceId = rawEvent[0].tracer.traceId;
 
         new Promise(res => setTimeout(res, 1)).then(x => {
           // it in promise due to a bug in memrid
@@ -222,7 +222,7 @@ export class MainComponent implements OnInit {
 // tslint:disable-next-line: class-name
 export class withMetaData<T> {
   value: T;
-  CallID: string;
+  traceId: string;
   startTime: Date;
   endTime: Date;
 }

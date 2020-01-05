@@ -13,8 +13,8 @@ interface Dictionary<T> {
 export class ZipkinService implements Search {
   constructor(private httpClient: HttpClient) { }
 
-  async Get(callID: string): Promise<EventModel[]> {
-    const url = `${environment.searchProvider.url}/api/v2/trace/${callID}`;
+  async Get(traceId: string): Promise<EventModel[]> {
+    const url = `${environment.searchProvider.url}/api/v2/trace/${traceId}`;
     try {
       const zapkinResponse = await this.httpClient.get<Zipkin[]>(url).toPromise();
       const results = zapkinResponse.map(x => this.Convert(x));
@@ -37,34 +37,34 @@ export class ZipkinService implements Search {
       result[property] = zapkinSpan[property];
     });
 
-    result.action = zapkinSpan.name;
-    result.callId = zapkinSpan.traceId;
-    result.durationMs = zapkinSpan.duration && zapkinSpan.duration / 1000;
-    result.parentSpanId = zapkinSpan.parentId;
-    result.spanId = zapkinSpan.id;
-    result.startedAt = zapkinSpan.timestamp && new Date(zapkinSpan.timestamp);
-    result.from.name = zapkinSpan.localEndpoint && (zapkinSpan.localEndpoint.serviceName || zapkinSpan.localEndpoint['ipv4']);
-    result.to.name = zapkinSpan.remoteEndpoint && (zapkinSpan.remoteEndpoint.serviceName
+    result.tracer.action = zapkinSpan.name;
+    result.tracer.traceId = zapkinSpan.traceId;
+    result.tracer.durationMs = zapkinSpan.duration && zapkinSpan.duration / 1000;
+    result.tracer.parentSpanId = zapkinSpan.parentId;
+    result.tracer.spanId = zapkinSpan.id;
+    result.tracer.startedAt = zapkinSpan.timestamp && new Date(zapkinSpan.timestamp);
+    result.tracer.from.name = zapkinSpan.localEndpoint && (zapkinSpan.localEndpoint.serviceName || zapkinSpan.localEndpoint['ipv4']);
+    result.tracer.to.name = zapkinSpan.remoteEndpoint && (zapkinSpan.remoteEndpoint.serviceName
       || zapkinSpan.remoteEndpoint['ipv4']);
     // add ip4 extra
     switch (zapkinSpan.kind) {
-      case 'CLIENT': result.direction = 0; break;
-      case 'SERVER': result.direction = 1; break;
-      case 'PRODUCER': result.direction = 2; break;
-      case 'CONSUMER': result.direction = 3; break;
+      case 'CLIENT': result.tracer.direction = 0; break;
+      case 'SERVER': result.tracer.direction = 1; break;
+      case 'PRODUCER': result.tracer.direction = 2; break;
+      case 'CONSUMER': result.tracer.direction = 3; break;
       // LOG
       case undefined:
-        if (!result.parentSpanId) {
-          result.parentSpanId = result.spanId;
+        if (!result.tracer.parentSpanId) {
+          result.tracer.parentSpanId = result.tracer.spanId;
         }
 
-        if (!result.to.name) {
-          result.direction = Direction.RequestOneWay;
-          result.to.name = result.from.name;
+        if (!result.tracer.to.name) {
+          result.tracer.direction = Direction.RequestOneWay;
+          result.tracer.to.name = result.tracer.from.name;
           result['isLog'] = true;
 
         } else {
-          result.direction = Direction.RequestTwoWay;
+          result.tracer.direction = Direction.RequestTwoWay;
         }
         break;
     }

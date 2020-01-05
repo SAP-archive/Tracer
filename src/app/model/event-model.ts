@@ -1,10 +1,13 @@
 export class EventModel {
+  tracer: Tracer = {} as Tracer;
+}
+export class Tracer {
   public from: Server;
   public to: Server;
   public action: string;
   public spanId: string;
   public parentSpanId: string;
-  public callId: string;
+  public traceId: string;
   public error: string;
   public priority: string;
   public startedAt: Date;
@@ -16,7 +19,6 @@ export class EventModel {
     this.to = {} as Server;
   }
 }
-
 
 export interface Server {
   nickName: string;
@@ -36,9 +38,6 @@ export interface Metadata {
   // The server can have multiple nicknames, we have to find the best name to display
 }
 
-
-// Some time we need to change the span or span id from the original format think if all the Tracer will be
-// inside of additional name space like Tracer.CallID
 
 /// 'CLIENT': 'SERVER':  'PRODUCER':  'CONSUMER': log? what the right expirations?
 export enum Direction {
