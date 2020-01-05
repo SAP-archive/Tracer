@@ -10,6 +10,7 @@ import { ActivatedRoute } from '@angular/router';
 })
 export class appSettings {
 
+
   private HistoryRecords: historyRecord[];
   private DefaultSettings: Settings;
   private UrlSettings: Settings;
@@ -167,6 +168,16 @@ export class appSettings {
     this.saveLocal();
 
   }
+
+  // tslint:disable-next-line: member-ordering
+  searchType: string = `1`;
+  SetSearchType(searchType: string) {
+    this.searchType = searchType;
+  }
+
+  getSearchType() {
+    return this.searchType;  }
+
 
 }
 export class Settings {

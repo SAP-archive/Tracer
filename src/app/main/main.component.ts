@@ -56,7 +56,7 @@ export class MainComponent implements OnInit {
       this.HistoryExpender.open();
     }
     this.SelectedTabIndex = this.settings.GetSelectedTabIndex();
-    this.ShowAggregateSearch = environment.ShowAggregateSearch;
+    this.ShowAggregateSearch = environment['ShowAggregateSearch'];
   }
   private loadFromHistory(traceId: string) {
     const index = this.settings.GetHistoryRecords().findIndex(x => x.traceId === traceId);
@@ -74,7 +74,7 @@ export class MainComponent implements OnInit {
         this.loading = false;
         return;
       }
-      this.init(c => this.searchService.GetFlow(c, this.searchType === '1'));
+      this.init(c => this.searchService.GetFlow(c));
     }
   }
 
@@ -151,7 +151,7 @@ export class MainComponent implements OnInit {
     this.settings.SetTraceId(this.traceId);
 
     this.traceId = this.selectedTraceId;
-    this.init(c => this.searchService.GetFlow(c, this.searchType === '1'));
+    this.init(c => this.searchService.GetFlow(c));
 
   }
 
@@ -216,6 +216,10 @@ export class MainComponent implements OnInit {
 
     this.settings.SetHistoryOpenDefaultPosition(!this.settings.GetHistoryOpenDefaultPosition());
     this.settings.save();
+  }
+
+  public showAggregateSearchChange() {
+    this.settings.SetSearchType(this.searchType);
   }
 }
 

@@ -14,7 +14,7 @@ export class ZipkinService implements Search {
   constructor(private httpClient: HttpClient) { }
 
   async Get(traceId: string): Promise<EventModel[]> {
-    const url = `${environment.searchProvider.url}/api/v2/trace/${traceId}`;
+    const url = `${environment.tracingProvider.url}/api/v2/trace/${traceId}`;
     try {
       const zapkinResponse = await this.httpClient.get<Zipkin[]>(url).toPromise();
       const results = zapkinResponse.map(x => this.Convert(x));

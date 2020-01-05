@@ -1,23 +1,19 @@
 export class EventModel {
-  tracer: Tracer = {} as Tracer;
+  tracer: Tracer = {    from: {}  ,to: {}} as Tracer;
 }
-export class Tracer {
-  public from: Server;
-  public to: Server;
-  public action: string;
-  public spanId: string;
-  public parentSpanId: string;
-  public traceId: string;
-  public error: string;
-  public priority: string;
-  public startedAt: Date;
-  public durationMs: number;
-  public direction: Direction;
-  public metadata: Metadata;
-  constructor() {
-    this.from = {} as Server;
-    this.to = {} as Server;
-  }
+export interface Tracer {
+   from: Server;
+   to: Server;
+   action: string;
+   spanId: string;
+   parentSpanId: string;
+   traceId: string;
+   error: string;
+   priority: string;
+   startedAt: Date;
+   durationMs: number;
+   direction: Direction;
+   metadata: Metadata;
 }
 
 export interface Server {
