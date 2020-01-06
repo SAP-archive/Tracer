@@ -150,7 +150,8 @@ export class appSettings {
   }
 
   public GetSelectedFelids() {
-    return this.UrlSettings.SelectedFelids || this.DefaultSettings.SelectedFelids || ['traceId', 'action', 'from.name', 'to.name'];
+    return this.UrlSettings.SelectedFelids || this.DefaultSettings.SelectedFelids ||
+     ['tracer.traceId', 'tracer.action', 'tracer.from.name', 'tracer.to.name'];
   }
 
   public SetSelectedFelids(selectedFelids: string[]) {

@@ -62,16 +62,17 @@ export class MainComponent implements OnInit {
     const index = this.settings.GetHistoryRecords().findIndex(x => x.traceId === traceId);
     this.traceId = traceId;
     this.selectedTraceId = traceId;
+
     if (index >= 0) { //  exists in history
       this.note = 'Note: history record, press search to reload the data';
 
       this.init(c => Promise.resolve(this.settings.GetHistoryRecords()[index].result));
     } else {
 
-      if (environment.searchProvider.url === 'http://YourSearchService.com/v1/Search') {
+      if (environment.searchProvider.url.startsWith('http://YourSearchService.com/v1/Search')) {
         this.error = 'Configuration required.'
           + '\n To enable search, please configure connection to the source of logs / events.'
-          + '\n For more details: https://github.com/sap/Tracer#loggingtracing-source.';
+          + '\n For more details: https://github.com/sap/Tracer#tracing-provider.';
         this.loading = false;
         return;
       }
@@ -139,10 +140,10 @@ export class MainComponent implements OnInit {
       return;
     }
 
-    if (environment.searchProvider.url === 'http://YourSearchService.com/v1/Search') {
+    if (environment.searchProvider.url.startsWith('http://YourSearchService.com/v1/Search')) {
       this.error = 'Configuration required.'
         + '\n To enable search, please configure connection to the source of logs / events.'
-        + '\n For more details: https://github.com/sap/Tracer#loggingtracing-source.';
+        + '\n For more details: https://github.com/sap/Tracer#tracing-provider.';
       this.loading = false;
       return;
     }
