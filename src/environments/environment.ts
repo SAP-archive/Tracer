@@ -4,11 +4,10 @@
 
 export const environment = {
   production: false,
-  ShowAggregateSearch: false,
   searchProvider:
   {
     name: 'zipkin', // default, zipkin
-    url:  'http://localhost:48319'
+    url:  'http://localhost:3199'
   },
   defaultStickyTags: ['traceId', 'user.*' ]
   ,  'links': [

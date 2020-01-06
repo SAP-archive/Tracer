@@ -24,21 +24,20 @@ export class OrderManagerService {
   private DeleteUserMetadata(events: EventModel[]) {
     // ignore the user metadata
     events.forEach(element => {
-      delete element['metadata'];
+      delete element.tracer['metadata'];
+      delete element.tracer.to.nickName;
+      delete element.tracer.from.nickName;
+      element.tracer.metadata = {} as Metadata;
+
     });
   }
-  private CreateMetadata(events: EventModel[]) {
-    // ignore the user metadata
-    events.forEach(x => {
-      x.tracer.metadata = { startedAtMs: new Date(x.tracer.startedAt).getTime() } as Metadata;
-    });
-  }
+
 
   private CreateLookUp(events: EventModel[]): Dictionary<EventModel> {
     const dictionary: Dictionary<EventModel> = {};
     let count = 1;
 
-    events = events.sort((a, b) => a.tracer.metadata.startedAtMs - b.tracer.metadata.startedAtMs);
+    events = events.sort((a, b) => a.tracer.timestamp - b.tracer.timestamp);
 
     events.forEach(event => {
       let id: string = getRequestDestination(event);
@@ -66,9 +65,8 @@ export class OrderManagerService {
         from: oppositeEvent.tracer.to,
         to: oppositeEvent.tracer.from,
         action: oppositeEvent.tracer.action,
-        startedAt: oppositeEvent.tracer.startedAt,
+        timestamp: oppositeEvent.tracer.timestamp,
         metadata: {
-          startedAtMs: oppositeEvent.tracer.metadata.startedAtMs,
           count: oppositeEvent.tracer.metadata.count,
           isFake: true,
         }
@@ -92,7 +90,6 @@ export class OrderManagerService {
 
   CreateMetaDataAndLookUp(events: EventModel[]): Dictionary<EventModel> {
     this.DeleteUserMetadata(events);
-    this.CreateMetadata(events);
     const dictionary = this.CreateLookUp(events);
     this.CreateOppositeEvent(dictionary, events);
     return dictionary;
@@ -114,7 +111,7 @@ export class OrderManagerService {
     const visitRoots: EventModel[] = [];
     //  More Root can be added later if not connected to the root span chain
     const roots = rootsCandidate.filter(event => !event.tracer.parentSpanId)
-      .sort((a, b) => b.tracer.metadata.startedAtMs - a.tracer.metadata.startedAtMs);
+      .sort((a, b) => b.tracer.timestamp - a.tracer.timestamp);
 
     while (hasMissingFlows) {
       if (roots.length !== 0) {
@@ -126,7 +123,7 @@ export class OrderManagerService {
         // when your log is events that not order by Hierarchy we need to do best effort to extract them
         const missingEvent = rootsCandidate.
           filter(event => !flowSeen[event.tracer.spanId] && visitRoots.findIndex(x => x === event) === -1)
-          .sort((a, b) => a.tracer.metadata.startedAtMs - b.tracer.metadata.startedAtMs);
+          .sort((a, b) => a.tracer.timestamp - b.tracer.timestamp);
         if (missingEvent && missingEvent.length > 0) {
           roots.push(missingEvent[0]);
         } else {
@@ -162,7 +159,7 @@ export class OrderManagerService {
           const childFlows = requestToOtherSystems.filter(event => event.tracer.parentSpanId === flow.tracer.spanId);
           if (childFlows) {
             // order is opposite of stack
-            childFlows.sort((a, b) => b.tracer.metadata.startedAtMs - a.tracer.metadata.startedAtMs).forEach((child: EventModel) => {
+            childFlows.sort((a, b) => b.tracer.timestamp - a.tracer.timestamp).forEach((child: EventModel) => {
               orderedFlows.push(child);
             });
           }

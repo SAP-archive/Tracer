@@ -42,7 +42,7 @@ export class ZipkinService implements Search {
     result.tracer.durationMs = zapkinSpan.duration && zapkinSpan.duration / 1000;
     result.tracer.parentSpanId = zapkinSpan.parentId;
     result.tracer.spanId = zapkinSpan.id;
-    result.tracer.startedAt = zapkinSpan.timestamp && new Date(zapkinSpan.timestamp);
+    result.tracer.timestamp = zapkinSpan.timestamp && zapkinSpan.timestamp;
     result.tracer.from.name = zapkinSpan.localEndpoint && (zapkinSpan.localEndpoint.serviceName || zapkinSpan.localEndpoint['ipv4']);
     result.tracer.to.name = zapkinSpan.remoteEndpoint && (zapkinSpan.remoteEndpoint.serviceName
       || zapkinSpan.remoteEndpoint['ipv4']);
@@ -70,10 +70,7 @@ export class ZipkinService implements Search {
     }
     return result;
   }
-  uniq(): string {
-    // tslint:disable-next-line: no-bitwise
-    return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
-  }
+
 }
 
 

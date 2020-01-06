@@ -1,10 +1,9 @@
 export const environment = {
   production: true,
-  ShowAggregateSearch: false,
-  searchProvider:
+  tracingProvider:
   {
     name: 'zipkin', // default, zipkin
-    url:  'http://localhost:48319'
+    url:  'http://localhost:3199'
   },
   defaultStickyTags: ['traceId', 'user.*' ]
   ,  'links': [

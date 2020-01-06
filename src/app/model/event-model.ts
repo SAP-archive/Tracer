@@ -1,19 +1,19 @@
 export class EventModel {
-  tracer: Tracer = {    from: {}  ,to: {}} as Tracer;
+  tracer: Tracer = { from: {}, to: {} } as Tracer;
 }
 export interface Tracer {
-   from: Server;
-   to: Server;
-   action: string;
-   spanId: string;
-   parentSpanId: string;
-   traceId: string;
-   error: string;
-   priority: string;
-   startedAt: Date;
-   durationMs: number;
-   direction: Direction;
-   metadata: Metadata;
+  from: Server;
+  to: Server;
+  action: string;
+  spanId: string;
+  parentSpanId: string;
+  traceId: string;
+  error: string;
+  priority: string;
+  timestamp: number; // microseconds
+  durationMs: number;
+  direction: Direction;
+  metadata: Metadata;
 }
 
 export interface Server {
@@ -29,8 +29,6 @@ export interface Metadata {
   count: number;
   clientEndBeforeServer: number;
   serverStartAfterClient: number;
-  startedAtMs: number;
-
   // The server can have multiple nicknames, we have to find the best name to display
 }
 

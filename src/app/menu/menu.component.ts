@@ -36,7 +36,9 @@ export class MenuComponent implements OnInit {
       const deepClone: EventModel[] = JSON.parse(JSON.stringify(this._rawEvents.value));
       // Remove metadata
       deepClone.forEach(element => {
-        delete element['metadata'];
+        delete element.tracer['metadata'];
+        delete element.tracer.to.nickName;
+        delete element.tracer.from.nickName;
       });
 
       const myObjStr: string = JSON.stringify(deepClone, null, 2);

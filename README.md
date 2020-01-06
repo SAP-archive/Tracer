@@ -62,7 +62,7 @@ The application source format is json array:
 | durationMs   | The time elapsed                                             |
 | direction    | A numeration that effect the sequence diagram:<br /><br />**Logical transaction:**<br />All the inner interactions will be in the same **operation block** .<br />comprise of start and end, when one of them is missing it will auto generate it  (The line courser will be with cross **⥇** ). <br /><br />**Case 0 logical transaction start** (striate line *→* )<br />**Case 1 logical transaction end**   (dashed line *⇠*)<br /> <br /> <br /> **Action with no continuation:** <br />A simple line with no side effect ,Log are excellent example of it.  <br />**Case 2 Action Start** ( striate line *→*) <br />**Case 3 Action End**  ( dashed line *⇠* )<br /> |
 | action       | The action title, e.g. login, GetUserList                    |
-| startedAt    | The timestamp the action started <br /> [**Format string**](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date): representing a date, specified in a format recognized by the [`Date.parse()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/parse) |
+| timestamp    | The timestamp the action started <br /> Epoch **microseconds** of this event. |
 | error        | An error message, if present, changes the line styling to red. |
 | from.name    | A system name generates this request                         |
 | to.name      | A system, the request calling to (in a log entry it calling to itself) |
@@ -89,7 +89,7 @@ All Provider can be configure in the environments settings  at  `\src\environmen
  }
 ```
 
->​ :bulb: it use internally Zipkin v2 API [/trace/{traceId}](https://zipkin.io/zipkin-api/#/default/get_trace__traceId_) 
+> :bulb: it use internally Zipkin v2 API [/trace/{traceId}](https://zipkin.io/zipkin-api/#/default/get_trace__traceId_) 
 
 
 ### Default Provider
@@ -104,7 +104,7 @@ All Provider can be configure in the environments settings  at  `\src\environmen
 To connect your logging/tracing system you have to Implementing simple search API.  
 The API must receive `trace`  ```http://YourSearchService.com/v1/trace/{traceId}```  
 * Trace ```<string>```:  an unique identifier of a request.  
->​  :bulb: Add [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) support by adding header "Access-Control-Allow-Origin", "*"` .
+>  :bulb: Add [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) support by adding header "Access-Control-Allow-Origin", "*"` .
 
 
 ## Ordering 

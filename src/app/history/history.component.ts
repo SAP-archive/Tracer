@@ -27,7 +27,9 @@ export class HistoryComponent {
         const item = { traceId: rawEvents.traceId, result: rawEvents.value } as historyRecord;
         const root = item.result.find(x => !x.tracer.parentSpanId);
         if (root) {
-          item.startedAt = this.datepipe.transform(new Date(root.tracer.startedAt), 'yyyy-MM-dd HH:MM');
+          if (root.tracer.timestamp > 0) {
+            item.startedAt = this.datepipe.transform(new Date(root.tracer.timestamp / 1000), 'yyyy-MM-dd HH:MM');
+          }
           item.action = root.tracer.action;
           item.error = root.tracer.error;
 

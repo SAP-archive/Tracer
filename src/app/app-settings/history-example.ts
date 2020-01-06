@@ -16,7 +16,7 @@ export class HistoryExample {
           'to': {
             'name': 'User'
           },
-          'startedAt': '2019-09-15T10:29:17.688Z',
+          'timestamp': 1502787600000000,
           'action': 'Order',
         }
         , 'userId': 1343
@@ -36,7 +36,7 @@ export class HistoryExample {
           'to': {
             'name': 'ShoppingCart'
           },
-          'startedAt': '2019-09-15T10:29:17.688Z',
+          'timestamp': 1502787600000000,
           'action': 'GetOrder',
         }
         , 'userId': 1343
@@ -55,7 +55,7 @@ export class HistoryExample {
           'to': {
             'name': 'Web'
           },
-          'startedAt': '2019-09-15T10:29:17.688Z',
+          'timestamp': 1502787600000000,
           'action': 'GetOrder',
         }
         , 'userId': 1343
@@ -74,7 +74,7 @@ export class HistoryExample {
           'to': {
             'name': 'OrderService'
           },
-          'startedAt': '2019-09-15T10:29:17.688Z',
+          'timestamp': 1502787600000000,
           'action': 'ConfirmOrder',
         }
         , 'userId': 1343
@@ -93,7 +93,7 @@ export class HistoryExample {
           'to': {
             'name': 'DB'
           },
-          'startedAt': '2019-09-15T10:29:17.688Z',
+          'timestamp': 1502787600000000,
           'action': 'Query',
         }
         , 'userId': 1343
@@ -111,7 +111,7 @@ export class HistoryExample {
           'to': {
             'name': 'Web'
           },
-          'startedAt': '2019-09-15T10:29:17.688Z',
+          'timestamp': 1502787600000000,
           'action': 'FindSession',
         }
         , 'userId': 1343
@@ -133,10 +133,10 @@ export class HistoryExample {
           'to': {
             'name': 'User'
           },
-          'startedAt': '2019-09-15T10:29:17.688Z',
+          'timestamp': 1502787600000000,
           'action': 'Order',
           'durationMs': 10000,
-          'error': "TimeOut"
+          'error': 'TimeOut'
         },
         'UserId': 1343
 
@@ -153,10 +153,10 @@ export class HistoryExample {
           'to': {
             'name': 'ShoppingCart'
           },
-          'startedAt': '2019-09-15T10:29:17.688Z',
+          'timestamp': 1502787600000000,
           'action': 'GetOrder',
           'durationMs': 10000,
-          'error': "TimeOut"
+          'error': 'TimeOut'
         }
         , 'userId': 1343
       },
@@ -172,7 +172,7 @@ export class HistoryExample {
           'to': {
             'name': 'Web'
           },
-          'startedAt': '2019-09-15T10:29:17.688Z',
+          'timestamp': 1502787600000000,
           'action': 'GetOrder',
           'durationMs': 10000,
           'error': 'TimeOut'
@@ -194,7 +194,7 @@ export class HistoryExample {
           'to': {
             'name': 'OrderService'
           },
-          'startedAt': '2019-09-15T10:29:17.688Z',
+          'timestamp': 1502787600000000,
           'action': 'ConfirmOrder',
         }
         , 'userId': 1343
@@ -213,14 +213,12 @@ export class HistoryExample {
           'to': {
             'name': 'DB'
           },
-          'startedAt': '2019-09-15T10:29:17.688Z',
+          'timestamp': 1502787600000000,
           'action': 'Query',
         }
         , 'userId': 1343
 
       }
     ]
-  }
-
-  ];
+  }]  ;
 }

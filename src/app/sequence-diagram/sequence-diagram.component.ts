@@ -66,7 +66,7 @@ export class SequenceDiagramComponent implements OnInit {
 
     orderedEvents.forEach(event => {
       const t = event.tracer.durationMs > 1000 ? `${Math.round(event.tracer.durationMs / 1000 * 100) / 100} sec` : Math.round(event.tracer.durationMs) + ' ms';
-      const time: string = !event.tracer.metadata.isFake && event.tracer.durationMs && event.tracer.durationMs !== 0 ? ` ⌛ ${t}` : ``;
+      const time: string = !event.tracer.metadata.isFake && event.tracer.durationMs && event.tracer.durationMs >= 1 ? ` ⌛ ${t}` : ``;
 
       let action = event.tracer.action;
 

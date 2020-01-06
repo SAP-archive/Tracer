@@ -103,7 +103,7 @@ export class MainComponent implements OnInit {
         let minDate: Date;
         this.traceId = currentOperation;
         if (rawEvent && rawEvent.length > 0) {
-          const times = rawEvent.map(x => x.tracer.metadata.startedAtMs);
+          const times = rawEvent.map(x => x.tracer.timestamp);
           maxDate = new Date(Math.max.apply(Math, times));
           minDate = new Date(Math.min.apply(Math, times));
         }
