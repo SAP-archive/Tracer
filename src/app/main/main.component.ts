@@ -60,10 +60,11 @@ export class MainComponent implements OnInit {
   }
   private loadFromHistory(traceId: string) {
     const index = this.settings.GetHistoryRecords().findIndex(x => x.traceId === traceId);
+    this.traceId = traceId;
+    this.selectedTraceId = traceId;
     if (index >= 0) { //  exists in history
       this.note = 'Note: history record, press search to reload the data';
-      this.traceId = traceId;
-      this.selectedTraceId = traceId;
+
       this.init(c => Promise.resolve(this.settings.GetHistoryRecords()[index].result));
     } else {
 
