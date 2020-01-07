@@ -9,7 +9,7 @@ const getRequestDestination = (event: EventModel) => {
 };
 
 const getRequestOppositeDestination = (event: EventModel) => {
-  const direction = event.tracer.direction === Direction.RequestTwoWay ? Direction.ResponseTwoWay : Direction.RequestTwoWay;
+  const direction = event.tracer.direction === Direction.LogicalTransactionStart ? Direction.LogicalTransactionEnd : Direction.LogicalTransactionStart;
   return `${direction}_${event.tracer.spanId}_${event.tracer.metadata.count}`;
 };
 
@@ -59,7 +59,7 @@ export class OrderManagerService {
   private CreateFakeEvent(oppositeEvent: EventModel): EventModel {
     return {
       tracer: {
-        direction: oppositeEvent.tracer.direction === Direction.RequestTwoWay ? Direction.ResponseTwoWay : Direction.RequestTwoWay,
+        direction: oppositeEvent.tracer.direction === Direction.LogicalTransactionStart ? Direction.LogicalTransactionEnd : Direction.LogicalTransactionStart,
         spanId: oppositeEvent.tracer.spanId,
         parentSpanId: oppositeEvent.tracer.parentSpanId,
         from: oppositeEvent.tracer.to,
@@ -76,7 +76,7 @@ export class OrderManagerService {
 
 
   private CreateOppositeEvent(dictionary: Dictionary<EventModel>, events: EventModel[]) {
-    events.filter(x => x.tracer.direction === Direction.RequestTwoWay || x.tracer.direction === Direction.ResponseTwoWay)
+    events.filter(x => x.tracer.direction === Direction.LogicalTransactionStart || x.tracer.direction === Direction.LogicalTransactionEnd)
       .forEach(event => {
 
         const oppositeEventId: string = getRequestOppositeDestination(event);
@@ -100,9 +100,9 @@ export class OrderManagerService {
     const ServerNameToNode: ServerNameToEvents = new ServerNameToEvents();
 
     const rootsCandidate: EventModel[] = Object.keys(events).map(x => events[x])
-      .filter(event => event.tracer.direction === Direction.RequestTwoWay
-        || event.tracer.direction === Direction.RequestOneWay
-        || event.tracer.direction === Direction.ResponseOneWay);
+      .filter(event => event.tracer.direction === Direction.LogicalTransactionStart
+        || event.tracer.direction === Direction.ActionStart
+        || event.tracer.direction === Direction.ActionEnd);
 
     // add all parent flows to ordered flow so we can initiate the processing
 
@@ -147,7 +147,7 @@ export class OrderManagerService {
       output.push(flow);
       serverToNodes.AddNode(flow);
       // check if this flow has a closing event
-      if (flow.tracer.direction !== Direction.ResponseTwoWay) {
+      if (flow.tracer.direction !== Direction.LogicalTransactionEnd) {
         const closeEventId: string = getRequestOppositeDestination(flow);
         const closeEvent = events[closeEventId];
         if (closeEvent) {
@@ -182,7 +182,7 @@ class ServerNameToEvents {
     if (event.tracer.spanId) {
       const A = this.Lookup[event.tracer.spanId] || [] as Server[];
       this.Lookup[event.tracer.spanId] = A;
-      if (event.tracer.direction === Direction.RequestOneWay || event.tracer.direction === Direction.RequestTwoWay) {
+      if (event.tracer.direction === Direction.ActionStart || event.tracer.direction === Direction.LogicalTransactionStart) {
         A.push(event.tracer.to);
       } else {
         A.push(event.tracer.from);
@@ -192,7 +192,7 @@ class ServerNameToEvents {
     if (event.tracer.parentSpanId) {
       const A = this.Lookup[event.tracer.parentSpanId] || [] as Server[];
       this.Lookup[event.tracer.parentSpanId] = A;
-      if (event.tracer.direction === Direction.RequestOneWay || event.tracer.direction === Direction.RequestTwoWay) {
+      if (event.tracer.direction === Direction.ActionStart || event.tracer.direction === Direction.LogicalTransactionStart) {
         A.push(event.tracer.from);
       } else {
         A.push(event.tracer.to);
@@ -205,7 +205,7 @@ class ServerNameToEvents {
     this.Lookup[span] = A;
 
 
-    if (event.tracer.direction === Direction.RequestOneWay || event.tracer.direction === Direction.RequestTwoWay) {
+    if (event.tracer.direction === Direction.ActionStart || event.tracer.direction === Direction.LogicalTransactionStart) {
       A.push(event.tracer.from);
       A.push(event.tracer.to);
     } else {

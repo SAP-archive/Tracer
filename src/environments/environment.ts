@@ -4,12 +4,12 @@
 
 export const environment = {
   production: false,
-  searchProvider:
+  tracingProvider:
   {
-    name: 'zipkin', // default, zipkin
-    url:  'http://localhost:3199'
+    name: 'default', // default, zipkin
+    url: 'http://YourSearchService.com/v1/Search' //http://localhost:9411'
   },
-  defaultStickyTags: ['traceId', 'user.*' ]
+  defaultStickyTags: ['tracer.traceId', 'user.*' ]
   ,  'links': [
     {
       'name': 'ThirdParty2',

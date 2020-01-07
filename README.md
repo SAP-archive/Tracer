@@ -82,10 +82,10 @@ All Provider can be configure in the environments settings  at  `\src\environmen
 
 #### Zipkin Provider
 
-```json
+```
   tracingProvider: {
   	 name: 'zipkin',
-	   url: 'http://localhost:3199'
+	   url: 'http://localhost:9411'
  }
 ```
 
@@ -94,7 +94,7 @@ All Provider can be configure in the environments settings  at  `\src\environmen
 
 ### Default Provider
 
-```json
+```
  tracingProvider: {
   	 name: 'default',
 	   url:  'http://YourSearchService.com/v1'

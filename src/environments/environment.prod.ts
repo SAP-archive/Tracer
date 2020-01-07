@@ -2,11 +2,11 @@ export const environment = {
   production: true,
   tracingProvider:
   {
-    name: 'zipkin', // default, zipkin
-    url:  'http://localhost:3199'
+    name: 'default', // default, zipkin
+    url: 'http://YourSearchService.com/v1/Search' //http://localhost:9411'
   },
-  defaultStickyTags: ['traceId', 'user.*' ]
-  ,  'links': [
+  defaultStickyTags: ['tracer.traceId', 'user.*']
+  , 'links': [
     {
       'name': 'ThirdParty2',
       'link': 'http://ThirdParty?StartTime={startDate}&to={endDate}&trace={traceId}'
@@ -14,7 +14,7 @@ export const environment = {
     {
       'name': 'ThirdParty1',
       // tslint:disable-next-line: max-line-length
-     'link': 'http://ThirdParty?StartTime={startDate}&to={endDate}&trace={traceId}'
+      'link': 'http://ThirdParty?StartTime={startDate}&to={endDate}&trace={traceId}'
     }
   ]
 };

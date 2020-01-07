@@ -69,7 +69,7 @@ export class MainComponent implements OnInit {
       this.init(c => Promise.resolve(this.settings.GetHistoryRecords()[index].result));
     } else {
 
-      if (environment.searchProvider.url.startsWith('http://YourSearchService.com/v1/Search')) {
+      if (environment.tracingProvider.url.startsWith('http://YourSearchService.com/v1/Search')) {
         this.error = 'Configuration required.'
           + '\n To enable search, please configure connection to the source of logs / events.'
           + '\n For more details: https://github.com/sap/Tracer#tracing-provider.';
@@ -140,7 +140,7 @@ export class MainComponent implements OnInit {
       return;
     }
 
-    if (environment.searchProvider.url.startsWith('http://YourSearchService.com/v1/Search')) {
+    if (environment.tracingProvider.url.startsWith('http://YourSearchService.com/v1/Search')) {
       this.error = 'Configuration required.'
         + '\n To enable search, please configure connection to the source of logs / events.'
         + '\n For more details: https://github.com/sap/Tracer#tracing-provider.';

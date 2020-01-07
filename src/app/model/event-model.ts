@@ -17,6 +17,7 @@ export interface Tracer {
 }
 
 export interface Server {
+    // The server can have multiple nicknames, we have to find the best name to display
   nickName: string;
   host: string;
   name: string;
@@ -29,12 +30,22 @@ export interface Metadata {
   count: number;
   clientEndBeforeServer: number;
   serverStartAfterClient: number;
-  // The server can have multiple nicknames, we have to find the best name to display
 }
 
 
 /// 'CLIENT': 'SERVER':  'PRODUCER':  'CONSUMER': log? what the right expirations?
+// ActionStart can be Doing
+// ActionEnd can be Reacting
+
+/*
+Logical transaction:
+All the inner interactions will be in the same operation block .
+comprise of start and end, when one of them is missing it will auto generate it (The line courser will be with cross ⥇ ).
+Case 0 logical transaction start (striate line → )
+Case 1 logical transaction end (dashed line ⇠)
+*/
+
 export enum Direction {
-  RequestTwoWay, ResponseTwoWay, RequestOneWay, ResponseOneWay
+  LogicalTransactionStart, LogicalTransactionEnd, ActionStart, ActionEnd
 }
-//  to do add validation
+// TODO: add validation

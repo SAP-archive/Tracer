@@ -76,17 +76,17 @@ export class SequenceDiagramComponent implements OnInit {
       action = escape(action);
 
       let lineType = '';
-      if (event.tracer.direction === Direction.RequestOneWay) {
+      if (event.tracer.direction === Direction.ActionStart) {
         lineType = '->>';
-      } else if (event.tracer.direction === Direction.ResponseOneWay) {
+      } else if (event.tracer.direction === Direction.ActionEnd) {
         lineType = '-->>';
-      } else if (event.tracer.direction === Direction.RequestTwoWay && !event.tracer.metadata.isFake) {
+      } else if (event.tracer.direction === Direction.LogicalTransactionStart && !event.tracer.metadata.isFake) {
         lineType = '->>+';
-      } else if (event.tracer.direction === Direction.RequestTwoWay && event.tracer.metadata.isFake) {
+      } else if (event.tracer.direction === Direction.LogicalTransactionStart && event.tracer.metadata.isFake) {
         lineType = '-X+';
-      } else if (event.tracer.direction === Direction.ResponseTwoWay && !event.tracer.metadata.isFake) {
+      } else if (event.tracer.direction === Direction.LogicalTransactionEnd && !event.tracer.metadata.isFake) {
         lineType = '-->>-';
-      } else if (event.tracer.direction === Direction.ResponseTwoWay && event.tracer.metadata.isFake) {
+      } else if (event.tracer.direction === Direction.LogicalTransactionEnd && event.tracer.metadata.isFake) {
         lineType = '--X-';
       }
       output.push(`${from}${lineType}${to}:${sorter(action)} ${time}`);

@@ -13,11 +13,11 @@ export class SearchService {
   constructor(private httpClient: HttpClient, private zipkinAdapter: ZipkinService) { }
 
   public async GetFlow(traceId: string): Promise<EventModel[]> {
-    if (environment.searchProvider.name === 'zipkin') {
+    if (environment.tracingProvider.name === 'zipkin') {
       return this.zipkinAdapter.Get(traceId);
     }
 
-    const url = `${environment.searchProvider.url}/trace/${traceId}`;
+    const url = `${environment.tracingProvider.url}/trace/${traceId}`;
     try {
       return await this.httpClient.get<EventModel[]>(url).toPromise();
 

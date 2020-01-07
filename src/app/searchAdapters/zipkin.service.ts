@@ -59,12 +59,12 @@ export class ZipkinService implements Search {
         }
 
         if (!result.tracer.to.name) {
-          result.tracer.direction = Direction.RequestOneWay;
+          result.tracer.direction = Direction.ActionStart;
           result.tracer.to.name = result.tracer.from.name;
           result['isLog'] = true;
 
         } else {
-          result.tracer.direction = Direction.RequestTwoWay;
+          result.tracer.direction = Direction.LogicalTransactionStart;
         }
         break;
     }
