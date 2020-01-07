@@ -26,3 +26,8 @@ table {
 .actor {
   font-size: 14px ;
 }
+.activation0 ,.activation1,.activation2,.activation3,.activation4,.activation5,.activation6,.activation7,.activation8,.activation9,.activation10
+{
+  fill:#303030 !important;
+  stroke:#f8f9fa !important;
+}

@@ -1,8 +1,8 @@
 <mat-nav-list>
   <mat-list-item *ngFor="let item of Items; let index = index" [class.selected]='selectedItem === index'
     (click)="load(item)">
-    <div mat-line matTooltip='{{item.name && item.name !== ""?item.name : item.callID}}'>{{text_truncate(
-      item.name && item.name !== ""?item.name : item.callID,23)
+    <div mat-line matTooltip='{{item.name && item.name !== ""?item.name : item.traceId}}'>{{text_truncate(
+      item.name && item.name !== ""?item.name : item.traceId,23)
     }} </div>
 
 

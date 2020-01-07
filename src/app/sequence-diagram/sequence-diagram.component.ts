@@ -65,33 +65,33 @@ export class SequenceDiagramComponent implements OnInit {
     };
 
     orderedEvents.forEach(event => {
-      const t = event.durationMs > 1000 ? `${Math.round(event.durationMs / 1000 * 100) / 100} sec` : Math.round(event.durationMs) + ' ms';
-      const time: string = !event.metadata.isFake && event.durationMs !== 0 ? ` ⌛ ${t}` : ``;
+      const t = event.tracer.durationMs > 1000 ? `${Math.round(event.tracer.durationMs / 1000 * 100) / 100} sec` : Math.round(event.tracer.durationMs) + ' ms';
+      const time: string = !event.tracer.metadata.isFake && event.tracer.durationMs && event.tracer.durationMs >= 1 ? ` ⌛ ${t}` : ``;
 
-      let action = event.action;
+      let action = event.tracer.action;
 
 
-      const from = saveSameCasing(escape(event.from.name));
-      const to = saveSameCasing(escape(event.to.name));
+      const from = saveSameCasing(escape(event.tracer.from.nickName || event.tracer.from.name));
+      const to = saveSameCasing(escape(event.tracer.to.nickName || event.tracer.to.name));
       action = escape(action);
 
       let lineType = '';
-      if (event.direction === Direction.RequestOneWay) {
+      if (event.tracer.direction === Direction.ActionStart) {
         lineType = '->>';
-      } else if (event.direction === Direction.ResponseOneWay) {
+      } else if (event.tracer.direction === Direction.ActionEnd) {
         lineType = '-->>';
-      } else if (event.direction === Direction.RequestTwoWay && !event.metadata.isFake) {
+      } else if (event.tracer.direction === Direction.LogicalTransactionStart && !event.tracer.metadata.isFake) {
         lineType = '->>+';
-      } else if (event.direction === Direction.RequestTwoWay && event.metadata.isFake) {
+      } else if (event.tracer.direction === Direction.LogicalTransactionStart && event.tracer.metadata.isFake) {
         lineType = '-X+';
-      } else if (event.direction === Direction.ResponseTwoWay && !event.metadata.isFake) {
+      } else if (event.tracer.direction === Direction.LogicalTransactionEnd && !event.tracer.metadata.isFake) {
         lineType = '-->>-';
-      } else if (event.direction === Direction.ResponseTwoWay && event.metadata.isFake) {
+      } else if (event.tracer.direction === Direction.LogicalTransactionEnd && event.tracer.metadata.isFake) {
         lineType = '--X-';
       }
       output.push(`${from}${lineType}${to}:${sorter(action)} ${time}`);
 
-      if (event.durationMs > 500) {
+      if (event.tracer.durationMs > 500) {
         output.push(`Note over ${from},${to}: Request took ${time}`);
       }
     });
@@ -135,7 +135,7 @@ export class SequenceDiagramComponent implements OnInit {
       (line).onclick = () => {
         this.dialog.open(SequenceDiagramDialogComponent, { data: item });
       };
-      if ((item.error)) {
+      if ((item.tracer.error)) {
         line.style.strokeWidth = 2;
         line.style.stroke = 'red';
 
@@ -176,7 +176,7 @@ export class SequenceDiagramComponent implements OnInit {
     });
   }
 
-  constructor(private dialog: MatDialog, public  scroll: ScrollDispatcher) { }
+  constructor(private dialog: MatDialog, public scroll: ScrollDispatcher) { }
 
   ngOnInit() {
 
@@ -189,16 +189,16 @@ export class SequenceDiagramComponent implements OnInit {
 
 
     this.scroll
-    .scrolled(4)
-    .subscribe((data: CdkScrollable) => {
-      const start = tabGroup.offsetTop + 50;
-      const scrollTop = data.getElementRef().nativeElement.scrollTop;
-      if (start > scrollTop) {
-      this.FixedHeader(0);
-      } else {
-      this.FixedHeader(scrollTop - start);
-      }
-    });
+      .scrolled(4)
+      .subscribe((data: CdkScrollable) => {
+        const start = tabGroup.offsetTop + 50;
+        const scrollTop = data.getElementRef().nativeElement.scrollTop;
+        if (start > scrollTop) {
+          this.FixedHeader(0);
+        } else {
+          this.FixedHeader(scrollTop - start);
+        }
+      });
   }
 }
 

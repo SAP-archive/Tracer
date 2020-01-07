@@ -167,7 +167,6 @@ import { DynamicTableComponent } from './dynamic-table/dynamic-table.component';
 
     RouterModule.forRoot([
       { path: '', component: MainComponent },
-      { path: ':CallID', component: MainComponent }
     ], { useHash: true})
   ],
   providers: [DatePipe],

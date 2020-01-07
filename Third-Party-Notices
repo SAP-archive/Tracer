@@ -1,6 +1,11 @@
 Tracer uses third-party software or other resources that may be distributed under licenses different than Tracer software.
 In the event that we overlooked to list required notice, please bring this to our attention by contacting us via this email opensource@sap.com
 
+zipkin examples:
+openzipkin/zipkin
+Apache License 2.0
+https://github.com/openzipkin/zipkin/blob/master/LICENSE
+
 
 @angular-devkit/build-angular
 MIT
@@ -1725,7 +1730,7 @@ Apache-2.0
  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  See the License for the specific language governing permissions and
  limitations under the License.
- 
+
 
 
 scope-css
@@ -1787,7 +1792,7 @@ Apache License
 
 Version 2.0, January 2004
 
-http://www.apache.org/licenses/ 
+http://www.apache.org/licenses/
 
 TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION
 

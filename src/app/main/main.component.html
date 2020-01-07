@@ -26,13 +26,13 @@
     <div class="container-fluid">
       <div class="flex-container" style="min-width:700px;">
         <P *ngIf="ShowAggregateSearch" style="margin-right:5px;margin-top:5px;">Result:</P>
-        <mat-radio-group *ngIf="ShowAggregateSearch" style="margin-right:4px" [(ngModel)]="searchType">
+        <mat-radio-group *ngIf="ShowAggregateSearch" style="margin-right:4px" [(ngModel)]="searchType" (onchange)="showAggregateSearchChange">
           <mat-radio-button style="margin-right:4px" value="1">First</mat-radio-button>
           <mat-radio-button value="2" style="margin-right:7px">Aggregate</mat-radio-button>
         </mat-radio-group>
 
         <mat-form-field style="margin:4px;width: 300px">
-          <input matInput placeholder="Enter CallID" [(ngModel)]="selectedCallID">
+          <input matInput placeholder="Enter TraceId" [(ngModel)]="selectedTraceId">
         </mat-form-field>
 
         <button mat-raised-button (click)="Search()" style="margin:20px" matTooltip="Search">

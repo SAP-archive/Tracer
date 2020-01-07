@@ -23,13 +23,15 @@ export class HistoryComponent {
     this.selectedItem = null;
     this._rawEvents = rawEvents;
     if (rawEvents && rawEvents.value && rawEvents.value.length > 0) {
-      if (!this.Items.find(x => x.callID === rawEvents.CallID && x.result.length === rawEvents.value.length)) {
-        const item = { callID: rawEvents.CallID, result: rawEvents.value } as historyRecord;
-        const root = item.result.find(x => !x.parentSpanId);
+      if (!this.Items.find(x => x.traceId === rawEvents.traceId && x.result.length === rawEvents.value.length)) {
+        const item = { traceId: rawEvents.traceId, result: rawEvents.value } as historyRecord;
+        const root = item.result.find(x => !x.tracer.parentSpanId);
         if (root) {
-          item.startedAt = this.datepipe.transform(new Date(root.startedAt), 'yyyy-MM-dd HH:MM');
-          item.action = root.action;
-          item.error = root.error;
+          if (root.tracer.timestamp > 0) {
+            item.startedAt = this.datepipe.transform(new Date(root.tracer.timestamp / 1000), 'yyyy-MM-dd HH:MM');
+          }
+          item.action = root.tracer.action;
+          item.error = root.tracer.error;
 
         }
         this.Items.unshift(item);
@@ -55,7 +57,7 @@ export class HistoryComponent {
 
 
       } else {
-        this.selectedItem = this.Items.findIndex(x => x.callID === rawEvents.CallID);
+        this.selectedItem = this.Items.findIndex(x => x.traceId === rawEvents.traceId);
       }
 
     }
@@ -74,7 +76,7 @@ export class HistoryComponent {
     }
   }
   edit(event: historyRecord) {
-    const name = prompt(`Please enter name for callID ${event.callID}`);
+    const name = prompt(`Please enter name for traceId ${event.traceId}`);
 
     if (name && name !== '') {
       event.name = name;
@@ -89,7 +91,7 @@ export class HistoryComponent {
     if (ending == null) {
       ending = '...';
     }
-    if (str.length > length) {
+    if (str && str.length > length) {
       return str.substring(0, length - ending.length) + ending;
     } else {
       return str;
@@ -104,7 +106,7 @@ export class historyRecord {
   error: string;
   action: string;
   name: string;
-  callID: string;
+  traceId: string;
   result: EventModel[];
   createDate: Date;
   startedAt: string;

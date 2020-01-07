@@ -31,20 +31,24 @@ The application source format is json array:
 
 ``` 
 [   
-      {
-        'callId': 'guid',
-        'direction': 0,
-        'durationMs': 15,
-        'spanId': '2',
-        'parentSpanId': '1',
-        'from': {
-                'name': 'Web'
-               },
-        'to': {
-             'name': 'ShoppingCart'
-           },
-        'startedAt': '2019-09-15T10:29:17.688Z',
-        'action': 'GetOrder',
+     {
+      'tracer': {
+                'traceId': 'guid',
+                'direction': 0,
+                'durationMs': 15,
+                'spanId': '2',
+                'parentSpanId': '1',
+                'from': {
+                        'name': 'Web'
+                       },
+                'to': {
+                     'name': 'ShoppingCart'
+                      },
+                'startedAt': '2019-09-15T10:29:17.688Z',
+                'action': 'GetOrder',
+      },
+      additionalfield1:1,
+      additionalfield2:2
       }
   ]
   
@@ -52,13 +56,13 @@ The application source format is json array:
 
 | Field        | Description                                                  |
 | ------------ | ------------------------------------------------------------ |
-| callId       | Every flow must have an unique identifier (a flow is comprised of all entities interactions of a single logical transaction)<br />Call Id should be identical across all event. |
+| traceId      | Every flow must have an unique identifier (a flow is comprised of all entities interactions of a single logical transaction)<br />traceId should be identical across all event. |
 | spanId       | An unique identifier to define a new scope. Any interactions forked from this one, will inherit it as a **parentSpanId** |
 | parentSpanId | The parent scope id (the first scope expected to be with no parentSpanId) |
 | durationMs   | The time elapsed                                             |
 | direction    | A numeration that effect the sequence diagram:<br /><br />**Logical transaction:**<br />All the inner interactions will be in the same **operation block** .<br />comprise of start and end, when one of them is missing it will auto generate it  (The line courser will be with cross **⥇** ). <br /><br />**Case 0 logical transaction start** (striate line *→* )<br />**Case 1 logical transaction end**   (dashed line *⇠*)<br /> <br /> <br /> **Action with no continuation:** <br />A simple line with no side effect ,Log are excellent example of it.  <br />**Case 2 Action Start** ( striate line *→*) <br />**Case 3 Action End**  ( dashed line *⇠* )<br /> |
 | action       | The action title, e.g. login, GetUserList                    |
-| startedAt    | The timestamp the action started <br /> [**Format string**](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date): representing a date, specified in a format recognized by the [`Date.parse()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/parse) |
+| timestamp    | The timestamp the action started <br /> Epoch **microseconds** of this event. |
 | error        | An error message, if present, changes the line styling to red. |
 | from.name    | A system name generates this request                         |
 | to.name      | A system, the request calling to (in a log entry it calling to itself) |
@@ -72,21 +76,35 @@ Any additional fields will be automatically added and can be examine.
 * Load event list from disk.
 * Save events on disk. 
 
-## Logging/Tracing Source
+## Tracing Provider
 
-To connect your logging/tracing system you have to Implementing simple search API.
+All Provider can be configure in the environments settings  at  `\src\environments\environment.prod.ts` and `\src\environments\environment.ts`.  
 
-The API must receive `callID`, `aggregate` as a query pram.
+#### Zipkin Provider
 
-* CallID ```<string>```:  an unique identifier of a request.
+```
+  tracingProvider: {
+  	 name: 'zipkin',
+	   url: 'http://localhost:9411'
+ }
+```
 
-* Aggregate ```<boolean>```: true - wait for all result to be returned,  otherwise,  return first result.
+> :bulb: it use internally Zipkin v2 API [/trace/{traceId}](https://zipkin.io/zipkin-api/#/default/get_trace__traceId_) 
 
-  > :bulb: To enable Aggregate option, set `ShowAggregateSearch` to true .
 
-  > :bulb:To define the URL, set `searchServiceUrl` to your search API.
+### Default Provider
 
-All the settings are in  `\src\environments\environment.prod.ts` and `\src\environments\environment.ts`.  
+```
+ tracingProvider: {
+  	 name: 'default',
+	   url:  'http://YourSearchService.com/v1'
+ }
+```
+
+To connect your logging/tracing system you have to Implementing simple search API.  
+The API must receive `trace`  ```http://YourSearchService.com/v1/trace/{traceId}```  
+* Trace ```<string>```:  an unique identifier of a request.  
+>  :bulb: Add [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) support by adding header "Access-Control-Allow-Origin", "*"` .
 
 
 ## Ordering 

@@ -10,6 +10,7 @@ import { ActivatedRoute } from '@angular/router';
 })
 export class appSettings {
 
+
   private HistoryRecords: historyRecord[];
   private DefaultSettings: Settings;
   private UrlSettings: Settings;
@@ -33,7 +34,7 @@ export class appSettings {
 
       this.route.queryParams.subscribe(params => {
 
-        this.UrlSettings.CallID = params['CallID'];
+        this.UrlSettings.traceId = params['traceId'];
         this.UrlSettings.SelectedTabIndex = params['SelectedTab'];
 
         const openHistory = params['OpenHistory'];
@@ -73,7 +74,7 @@ export class appSettings {
   public saveLocal() {
 
     let query: string;
-    query = this.UrlSettings.CallID ? `?CallID=${this.UrlSettings.CallID}` : ``;
+    query = this.UrlSettings.traceId ? `?traceId=${this.UrlSettings.traceId}` : ``;
     query += this.UrlSettings.HistoryOpenDefaultPosition !== undefined ? `&OpenHistory=${this.UrlSettings.HistoryOpenDefaultPosition}` : ``;
     query += this.UrlSettings.SelectedTabIndex ? `&SelectedTab=${this.UrlSettings.SelectedTabIndex}` : ``;
     query += this.UrlSettings.StickyTags ? `&StickyTags=${this.UrlSettings.StickyTags.join(`,`)}` : ``;
@@ -94,7 +95,7 @@ export class appSettings {
   public GetHistoryRecords(): historyRecord[] {
     if (!this.HistoryRecords) {
 
-      const history = localStorage.getItem('historyRecords');
+      const history = localStorage.getItem('historyRecords1');
       try {
         this.HistoryRecords = JSON.parse(history);
       } catch (error) {
@@ -109,7 +110,7 @@ export class appSettings {
 
   public SetHistoryRecords(historyRecords: historyRecord[]) {
     this.HistoryRecords = historyRecords;
-    localStorage.setItem('historyRecords', JSON.stringify(this.HistoryRecords));
+    localStorage.setItem('historyRecords1', JSON.stringify(this.HistoryRecords));
   }
 
   public GetStickyTags() {
@@ -149,7 +150,8 @@ export class appSettings {
   }
 
   public GetSelectedFelids() {
-    return this.UrlSettings.SelectedFelids || this.DefaultSettings.SelectedFelids || ['callId', 'action', 'from.name', 'to.name'];
+    return this.UrlSettings.SelectedFelids || this.DefaultSettings.SelectedFelids ||
+     ['tracer.traceId', 'tracer.action', 'tracer.from.name', 'tracer.to.name'];
   }
 
   public SetSelectedFelids(selectedFelids: string[]) {
@@ -158,15 +160,25 @@ export class appSettings {
     this.saveLocal();
   }
 
-  public GetCallID(): string {
-    return this.UrlSettings.CallID;
+  public GetTraceId(): string {
+    return this.UrlSettings.traceId;
   }
 
-  public SetCallID(callID: string) {
-    this.UrlSettings.CallID = callID;
+  public SetTraceId(traceId: string) {
+    this.UrlSettings.traceId = traceId;
     this.saveLocal();
 
   }
+
+  // tslint:disable-next-line: member-ordering
+  searchType: string = `1`;
+  SetSearchType(searchType: string) {
+    this.searchType = searchType;
+  }
+
+  getSearchType() {
+    return this.searchType;  }
+
 
 }
 export class Settings {
@@ -174,5 +186,5 @@ export class Settings {
   HistoryOpenDefaultPosition: boolean;
   SelectedFelids: string[];
   SelectedTabIndex: number;
-  CallID: string;
+  traceId: string;
 }

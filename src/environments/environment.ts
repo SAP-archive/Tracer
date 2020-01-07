@@ -4,18 +4,21 @@
 
 export const environment = {
   production: false,
-  ShowAggregateSearch: false,
-  searchServiceUrl: 'http://YourSearchService.com/v1/Search',
-  defaultStickyTags: ['callId', 'tags.*' ]
+  tracingProvider:
+  {
+    name: 'default', // default, zipkin
+    url: 'http://YourSearchService.com/v1/Search' //http://localhost:9411'
+  },
+  defaultStickyTags: ['tracer.traceId', 'user.*' ]
   ,  'links': [
     {
       'name': 'ThirdParty2',
-      'link': 'http://ThirdParty?StartTime={startDate}&to={endDate}&callID={callID}'
+      'link': 'http://ThirdParty?StartTime={startDate}&to={endDate}&traceId={traceId}'
     },
     {
       'name': 'ThirdParty1',
       // tslint:disable-next-line: max-line-length
-     'link': 'http://ThirdParty?StartTime={startDate}&to={endDate}&callID={callID}'
+     'link': 'http://ThirdParty?StartTime={startDate}&to={endDate}&traceId={traceId}'
     }
   ]
 };
