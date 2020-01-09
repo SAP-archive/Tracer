@@ -87,7 +87,7 @@ export class MainComponent implements OnInit {
     const currentSearchType = this.searchType;
     try {
       const rawEvent = await getFlow(currentOperation);
-      if (rawEvent == null) {
+      if (rawEvent == null || rawEvent.length === 0 ) {
         if (currentOperation === this.traceId && currentSearchType === this.searchType) {
           // Optimistic locking
           this.error = 'No result found';

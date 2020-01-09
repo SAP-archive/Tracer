@@ -1,16 +1,30 @@
 import { EventModel, Direction, Metadata, Server, Tracer } from './model/event-model';
 import { Injectable } from '@angular/core';
+import { E } from '@angular/cdk/keycodes';
 interface Dictionary<T> {
   [Key: string]: T;
 }
 
+
 const getRequestDestination = (event: EventModel) => {
-  return `${event.tracer.direction}_${event.tracer.spanId}_${event.tracer.metadata.count}`;
+  if (event.tracer.spanId) {
+    return `${event.tracer.direction}_${event.tracer.spanId}_${event.tracer.metadata.count}`;
+  } else { // To support broken event
+    return `${event.tracer.from.name && event.tracer.from.name.toLowerCase()}->${event.tracer.to && event.tracer.to.name && event.tracer.to.name.toLowerCase()
+      }:.${event.tracer.direction}_${event.tracer.spanId}_${event.tracer.metadata.count}`;
+  }
 };
 
 const getRequestOppositeDestination = (event: EventModel) => {
-  const direction = event.tracer.direction === Direction.LogicalTransactionStart ? Direction.LogicalTransactionEnd : Direction.LogicalTransactionStart;
-  return `${direction}_${event.tracer.spanId}_${event.tracer.metadata.count}`;
+  const direction = event.tracer.direction === Direction.LogicalTransactionStart ?
+    Direction.LogicalTransactionEnd : Direction.LogicalTransactionStart;
+
+  if (event.tracer.spanId) {
+    return `${direction}_${event.tracer.spanId}_${event.tracer.metadata.count}`;
+  } else { // To support broken event
+    return `${event.tracer.to && event.tracer.to.name && event.tracer.to.name.toLowerCase()
+      }->${event.tracer.from.name && event.tracer.from.name.toLowerCase()}:.${direction}_${event.tracer.spanId}_${event.tracer.metadata.count}`;
+  }
 };
 
 @Injectable({
@@ -96,7 +110,6 @@ export class OrderManagerService {
   }
 
   BuildHierarchy(events: Dictionary<EventModel>): EventModel[] {
-    const flowSeen: any = {};
     const ServerNameToNode: ServerNameToEvents = new ServerNameToEvents();
 
     const rootsCandidate: EventModel[] = Object.keys(events).map(x => events[x])
@@ -117,12 +130,12 @@ export class OrderManagerService {
       if (roots.length !== 0) {
         const root = roots.pop();
         visitRoots.push(root);
-        const result = this.BuildRootHierarchy(root, events, flowSeen, rootsCandidate, ServerNameToNode);
+        const result = this.BuildRootHierarchy(root, events, rootsCandidate, ServerNameToNode);
         output = output.concat(result);
       } else {
         // when your log is events that not order by Hierarchy we need to do best effort to extract them
         const missingEvent = rootsCandidate.
-          filter(event => !flowSeen[event.tracer.spanId] && visitRoots.findIndex(x => x === event) === -1)
+          filter(event => !event.tracer.metadata.visit && visitRoots.findIndex(x => x === event) === -1)
           .sort((a, b) => a.tracer.timestamp - b.tracer.timestamp);
         if (missingEvent && missingEvent.length > 0) {
           roots.push(missingEvent[0]);
@@ -137,24 +150,28 @@ export class OrderManagerService {
 
   // sort the events according to flow hierarchy
   // It also build another hierarchy that map each event to server to create single nickname for server
-  private BuildRootHierarchy(root: EventModel, events: Dictionary<EventModel>,
-    flowSeen: any, requestToOtherSystems: EventModel[], serverToNodes: ServerNameToEvents) {
+  private BuildRootHierarchy(root: EventModel, events: Dictionary<EventModel>
+    , requestToOtherSystems: EventModel[], serverToNodes: ServerNameToEvents) {
     const output: EventModel[] = [];
     const orderedFlows: EventModel[] = [];
     orderedFlows.push(root);
     while (orderedFlows.length > 0) {
       const flow: EventModel = orderedFlows.pop();
+      if (flow.tracer.metadata.visit) {
+        continue;
+      }
       output.push(flow);
+      flow.tracer.metadata.visit = true;
       serverToNodes.AddNode(flow);
       // check if this flow has a closing event
-      if (flow.tracer.direction !== Direction.LogicalTransactionEnd) {
+      if (flow.tracer.direction === Direction.LogicalTransactionStart) {
         const closeEventId: string = getRequestOppositeDestination(flow);
         const closeEvent = events[closeEventId];
         if (closeEvent) {
           orderedFlows.push(closeEvent);
         }
         // get all child flow
-        const uniqueFlow = flow.tracer.spanId && !(flowSeen[flow.tracer.spanId]);
+        const uniqueFlow = flow.tracer.spanId;
         if (uniqueFlow) {
           const childFlows = requestToOtherSystems.filter(event => event.tracer.parentSpanId === flow.tracer.spanId);
           if (childFlows) {
@@ -164,7 +181,6 @@ export class OrderManagerService {
             });
           }
         }
-        flowSeen[flow.tracer.spanId] = 1;
       }
     }
 
@@ -177,42 +193,41 @@ export class OrderManagerService {
 class ServerNameToEvents {
   Lookup: Dictionary<Server[]> = {};
   public AddNode(event: EventModel) {
-    if (!(event.tracer.parentSpanId || event.tracer.spanId)) { return; }
+    //  if (!event.tracer.from) { event.tracer.from = {} as Server }
+    // if (!event.tracer.from) { event.tracer.to = {} as  Server}
 
-    if (event.tracer.spanId) {
-      const A = this.Lookup[event.tracer.spanId] || [] as Server[];
-      this.Lookup[event.tracer.spanId] = A;
-      if (event.tracer.direction === Direction.ActionStart || event.tracer.direction === Direction.LogicalTransactionStart) {
-        A.push(event.tracer.to);
-      } else {
-        A.push(event.tracer.from);
-      }
-    }
+    this.insertToLookup(event, event.tracer.spanId, false);
+    this.insertToLookup(event, event.tracer.parentSpanId, true);
 
-    if (event.tracer.parentSpanId) {
-      const A = this.Lookup[event.tracer.parentSpanId] || [] as Server[];
-      this.Lookup[event.tracer.parentSpanId] = A;
-      if (event.tracer.direction === Direction.ActionStart || event.tracer.direction === Direction.LogicalTransactionStart) {
-        A.push(event.tracer.from);
-      } else {
-        A.push(event.tracer.to);
-      }
-    }
 
   }
   insertToLookup(event: EventModel, span: string, isParent: boolean) {
-    const A = this.Lookup[span] || [] as Server[];
-    this.Lookup[span] = A;
+    if (!span) {
+      return;
+    }
 
+    const A = this.Lookup[span + 'F'] || [] as Server[];
+    const B = this.Lookup[span + 'T'] || [] as Server[];
 
-    if (event.tracer.direction === Direction.ActionStart || event.tracer.direction === Direction.LogicalTransactionStart) {
-      A.push(event.tracer.from);
-      A.push(event.tracer.to);
-    } else {
-      if (isParent) {
+    this.Lookup[span + 'F'] = A;
+    this.Lookup[span + 'T'] = B;
+
+    if (!isParent) {
+      //  Get dic of opposite if has no parent search other direction ...
+      if (event.tracer.direction === Direction.ActionStart || event.tracer.direction === Direction.LogicalTransactionStart) {
+        A.push(event.tracer.from);
+        B.push(event.tracer.to);
+      } else {
         A.push(event.tracer.to);
-      } // client event of parent is good for Child, but child not intrest the parent
-      A.push(event.tracer.from);
+        B.push(event.tracer.from);
+      }
+    } else {
+      if (event.tracer.direction === Direction.ActionStart || event.tracer.direction === Direction.LogicalTransactionStart) {
+        B.push(event.tracer.from);
+      } else {
+        B.push(event.tracer.to);
+      }
+
     }
   }
 
@@ -230,13 +245,15 @@ class ServerNameToEvents {
         }
       });
 
+      if (!nickName || nickName === 'unknown' || nickName === null) { return; }
 
 
       this.Lookup[server].forEach(event => {
         event.nickName = nickName;
-        // set nickname
-        if (event && event.name && nameToNickNames[event.name]) {
-          nameToNickNames[event.nickName] = nickName;
+
+        // set all nicknames
+        if (event && event.name && event.name !== null && event.name !== 'unknown') {
+          nameToNickNames[event.name] = nickName;
         }
       });
     });

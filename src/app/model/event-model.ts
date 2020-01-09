@@ -17,7 +17,7 @@ export interface Tracer {
 }
 
 export interface Server {
-    // The server can have multiple nicknames, we have to find the best name to display
+  // The server can have multiple nicknames, we have to find the best name to display
   nickName: string;
   host: string;
   name: string;
@@ -30,6 +30,7 @@ export interface Metadata {
   count: number;
   clientEndBeforeServer: number;
   serverStartAfterClient: number;
+  visit: boolean;
 }
 
 
