@@ -1,4 +1,3 @@
-.example-spacer {
-    flex: 1 1 auto;
-  }
-  .selected { background: #5c5c5c;}
+.selected {
+  background: #5c5c5c;
+}

@@ -23,9 +23,11 @@ export class MenuComponent implements OnInit {
   }
   isExpanded = false;
   @Output()
-  FileOpen: EventEmitter<FileEvent> = new EventEmitter<FileEvent>();
+  FileOpenEvent: EventEmitter<FileEvent> = new EventEmitter<FileEvent>();
   EnableSave = false;
 
+  @Output()
+  ClickEvent: EventEmitter<MenuClickEvent> = new EventEmitter<MenuClickEvent>();
   constructor(private dateFormat: DatePipe, private setting: appSettings) { }
 
   ngOnInit() {
@@ -60,16 +62,19 @@ export class MenuComponent implements OnInit {
         const text = reader.result;
         result.content = text.toString();
 
-        this.FileOpen.emit(result);
+        this.FileOpenEvent.emit(result);
       };
       reader.readAsText(input.files[0]);
       input.value = '';
     }
   }
 
+  ChangeHistory() {
+    this.ClickEvent.emit({name: 'history'} as MenuClickEvent);
+  }
   updateLinkList() {
     if (this.linksRaw && this.linksRaw.length > 0 && this._rawEvents && this._rawEvents.traceId
-      && this._rawEvents.startTime && this._rawEvents.startTime.getTime() .toString() !== 'NaN'
+      && this._rawEvents.startTime && this._rawEvents.startTime.getTime().toString() !== 'NaN'
       && this._rawEvents.endTime && this._rawEvents.endTime.getTime().toString() !== 'NaN') {
       this.links = this.linksRaw.map(x => ({
         name: x.name, link: x.link
@@ -102,6 +107,9 @@ export class FileEvent {
   name: string;
 }
 
+export class MenuClickEvent {
+  name: string;
+}
 export class Link {
   link: string;
   name: string;

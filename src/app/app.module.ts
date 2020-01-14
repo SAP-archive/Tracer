@@ -166,7 +166,7 @@ import { DynamicTableComponent } from './dynamic-table/dynamic-table.component';
     BrowserAnimationsModule,
 
     RouterModule.forRoot([
-      { path: '', component: MainComponent },
+      { path: '**', component: MainComponent },
     ], { useHash: true})
   ],
   providers: [DatePipe],

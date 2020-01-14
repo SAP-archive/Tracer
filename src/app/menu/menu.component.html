@@ -11,14 +11,18 @@
       <mat-icon>clear</mat-icon>
       <span>Reset Layout </span>
     </button>
+    <button mat-menu-item (click)="ChangeHistory()">
+      <mat-icon>history</mat-icon>
+      <span>History </span>
+    </button>
   </mat-menu>
 
   <h1>Tracer</h1>
 
-  <span class="example-spacer"></span>
+  <span class="spacer"></span>
 
   <button mat-icon-button [disabled]="!(links && links.length>0 && _rawEvents && _rawEvents.traceId)">
-    <mat-icon class="example-icon" [matMenuTriggerFor]="menu" matTooltip="Open other apps">
+    <mat-icon class="icon" [matMenuTriggerFor]="menu" matTooltip="Open other apps">
       apps</mat-icon>
   </button>
   <mat-menu #menu="matMenu">
@@ -29,11 +33,11 @@
     </mat-list-item>
   </mat-menu>
   <button mat-icon-button [disabled]="!EnableSave">
-    <mat-icon class="example-icon" aria-hidden="false" (click)="saveFile()" matTooltip="save file">
+    <mat-icon class="icon" aria-hidden="false" (click)="saveFile()" matTooltip="save file">
       cloud_download</mat-icon>
   </button>
   <label style="margin-bottom: -11px">
-    <mat-icon class="example-icon" aria-hidden="false" matTooltip="load form saved file">cloud_upload
+    <mat-icon class="icon" aria-hidden="false" matTooltip="load form saved file">cloud_upload
       <input type='file' class="displayNone" accept='application/JSON' (input)='openFile($event)'>
     </mat-icon>
   </label>

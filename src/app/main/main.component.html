@@ -1,5 +1,5 @@
-<mat-drawer-container hasBackdrop="false" autosize fullscreen>
-  <mat-drawer  mode="side" #HistoryExpender   (click)=" ChangeHistoryOpenState()">
+<mat-drawer-container hasBackdrop="false" fullscreen>
+  <mat-drawer mode="side" #HistoryExpender (click)=" ChangeHistoryOpenState()">
     <div style=" display: flex; align-items: center; justify-content: center; height: 100%;">
       <div>
         <button mat-icon-button>
@@ -9,11 +9,11 @@
     </div>
   </mat-drawer>
 
-  <mat-drawer-container hasBackdrop="false" autosize fullscreen>
-    <mat-drawer mode="side" #HistoryWindow     >
+  <mat-drawer-container hasBackdrop="false" autosize fullscreen style="height: 100%;">
+    <mat-drawer mode="side" #HistoryWindow>
       <mat-toolbar>
         <div>History</div>
-        <span class="example-spacer"></span>
+        <span class="spacer"></span>
         <button mat-icon-button>
           <mat-icon (click)="ChangeHistoryOpenState()">close</mat-icon>
         </button>
@@ -21,25 +21,36 @@
 
       <app-history [rawEvents]="rawEvents" (loadFormHistory)=loadFormHistory($event)></app-history>
     </mat-drawer>
-    <app-menu [rawEvents]="rawEvents" (FileOpen)="openFileTrigger($event)"></app-menu>
+    <app-menu [rawEvents]="rawEvents" (FileOpenEvent)="openFileTrigger($event)" (ClickEvent)="ChangeHistoryOpenState()"
+   ></app-menu>
+<div *ngIf="isMobile && isHistoryOpen"   style="border: #616161; border-style: solid; border-width: 0px 0px 1px 0px; margin-bottom: 20px;">
+    <mat-toolbar  >
+      <div>History</div>
+      <span class="spacer"></span>
+      <button mat-icon-button>
+        <mat-icon (click)="ChangeHistoryOpenState()">close</mat-icon>
+      </button>
+    </mat-toolbar>
+    <app-history *ngIf="isMobile && isHistoryOpen" [rawEvents]="rawEvents" (loadFormHistory)=loadFormHistory($event)
+  ></app-history>
+  </div>
+    <div class="container-fluid" >
+      <P *ngIf="ShowAggregateSearch" style="margin-right:5px;margin-top:5px;">Result:</P>
+      <mat-radio-group *ngIf="ShowAggregateSearch" style="margin-right:4px" [(ngModel)]="searchType"
+        (onchange)="showAggregateSearchChange">
+        <mat-radio-button style="margin-right:4px" value="1">First</mat-radio-button>
+        <mat-radio-button value="2" style="margin-right:7px">Aggregate</mat-radio-button>
+      </mat-radio-group>
 
-    <div class="container-fluid">
-      <div class="flex-container" style="min-width:700px;">
-        <P *ngIf="ShowAggregateSearch" style="margin-right:5px;margin-top:5px;">Result:</P>
-        <mat-radio-group *ngIf="ShowAggregateSearch" style="margin-right:4px" [(ngModel)]="searchType" (onchange)="showAggregateSearchChange">
-          <mat-radio-button style="margin-right:4px" value="1">First</mat-radio-button>
-          <mat-radio-button value="2" style="margin-right:7px">Aggregate</mat-radio-button>
-        </mat-radio-group>
+      <mat-form-field style="margin:4px;width: 300px">
+        <input matInput placeholder="Enter TraceId" [(ngModel)]="selectedTraceId">
+      </mat-form-field>
 
-        <mat-form-field style="margin:4px;width: 300px">
-          <input matInput placeholder="Enter TraceId" [(ngModel)]="selectedTraceId">
-        </mat-form-field>
+      <button mat-raised-button (click)="Search()" style="margin:20px" matTooltip="Search">
+        <mat-icon aria-hidden="false">
+          search</mat-icon>Search
+      </button>
 
-        <button mat-raised-button (click)="Search()" style="margin:20px" matTooltip="Search">
-          <mat-icon aria-hidden="false">
-            search</mat-icon>Search
-        </button>
-      </div>
 
       <app-sticky-note [events]="events"></app-sticky-note>
 
@@ -47,7 +58,7 @@
       <p style="color:red;MARGIN-LEFT:10px; white-space: pre-wrap; font-weight: bold;">{{error}}</p>
       <p style="color:darkgoldenrod;MARGIN-LEFT:10px;">{{note}}</p>
 
-      <mat-tab-group id="tabGroup"  [selectedIndex]="SelectedTabIndex"  (selectedTabChange)="tabChanged($event)">
+      <mat-tab-group id="tabGroup" [selectedIndex]="SelectedTabIndex" (selectedTabChange)="tabChanged($event)"   class="fullHeight">
         <mat-tab label="Sequence Diagram">
           <ng-template matTabContent>
             <app-sequence-diagram [orderEvents]="orderEvents" [orderEvents]="orderEvents">
@@ -55,7 +66,7 @@
           </ng-template>
         </mat-tab>
 
-        <mat-tab label="Raw Data">
+        <mat-tab label="Table">
           <app-tag-table [dataSource]="formattedRawEvent"></app-tag-table>
         </mat-tab>
       </mat-tab-group>

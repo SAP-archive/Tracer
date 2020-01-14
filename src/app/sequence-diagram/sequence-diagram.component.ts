@@ -182,7 +182,7 @@ export class SequenceDiagramComponent implements OnInit {
 
     mermaid.initialize({
       theme: 'dark',
-      sequence: { actorMargin: 50, useMaxWidth: false },
+      sequence: { actorMargin: 50, useMaxWidth: false , width:100,heigh:100},
       startOnLoad: false
     });
     const tabGroup = document.getElementById('tabGroup');

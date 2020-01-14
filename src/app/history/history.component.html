@@ -15,7 +15,7 @@
     <p mat-line style="font-size: 9pt" *ngIf="item.action" matTooltip='{{item.action}}'>
       action: {{text_truncate(item.action,25)}}
     </p>
-    <span class="example-spacer"></span>
+    <span class="spacer"></span>
     <button mat-icon-button (click)="edit(item) || $event.stopPropagation() ">
       <mat-icon>edit</mat-icon>
     </button>

@@ -6,6 +6,7 @@
   cursor: pointer;
 }
 
+
 table {
   width: 100%;
 }
@@ -17,7 +18,7 @@ table {
 .mat-row {
   height: 35 !important;
 }
-.example-spacer {
+.spacer {
   flex: 1 1 auto;
 }
 
@@ -31,3 +32,9 @@ table {
   fill:#303030 !important;
   stroke:#f8f9fa !important;
 }
+
+.fullHeight
+{
+ height: 100%;
+}
+

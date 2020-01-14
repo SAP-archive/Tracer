@@ -21,14 +21,14 @@ export class MainComponent implements OnInit {
   public note: string;
   public loading: boolean;
   public searchType = '1';
-  public HistoryOpenDefaultPosition: boolean;
   public orderEvents: EventModel[] = []; // Use to create a graph at the moment only sequence diagram is supported
   public events: EventModel[] = []; // Use to display formatted event
   public rawEvents: withMetaData<any[]>; // Use for save state
   public formattedRawEvent: any[]; // Use to display raw data
   public SelectedTabIndex: number;
   public ShowAggregateSearch: boolean;
-
+  public isMobile: boolean;
+  public isHistoryOpen: boolean;
   @ViewChild('HistoryWindow', { static: true }) HistoryWindow: MatDrawer;
   @ViewChild('HistoryExpender', { static: true }) HistoryExpender: MatDrawer;
 
@@ -39,6 +39,7 @@ export class MainComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    this.isMobile = window.innerWidth < 800;
     this.SetControlInDefaultState();
     const traceId = this.settings.GetTraceId();
     if (traceId) {
@@ -50,11 +51,15 @@ export class MainComponent implements OnInit {
   }
 
   private SetControlInDefaultState() {
-    if (this.settings.GetHistoryOpenDefaultPosition()) {
-      this.HistoryWindow.open();
-    } else {
-      this.HistoryExpender.open();
+
+    if (this.isMobile === false) {
+      if (this.settings.GetHistoryOpenDefaultPosition()) {
+        this.HistoryWindow.open();
+      } else {
+        this.HistoryExpender.open();
+      }
     }
+    this.isHistoryOpen = this.settings.GetHistoryOpenDefaultPosition();
     this.SelectedTabIndex = this.settings.GetSelectedTabIndex();
     this.ShowAggregateSearch = environment['ShowAggregateSearch'];
   }
@@ -87,7 +92,7 @@ export class MainComponent implements OnInit {
     const currentSearchType = this.searchType;
     try {
       const rawEvent = await getFlow(currentOperation);
-      if (rawEvent == null || rawEvent.length === 0 ) {
+      if (rawEvent == null || rawEvent.length === 0) {
         if (currentOperation === this.traceId && currentSearchType === this.searchType) {
           // Optimistic locking
           this.error = 'No result found';
@@ -213,10 +218,13 @@ export class MainComponent implements OnInit {
   }
 
   public ChangeHistoryOpenState() {
-    this.HistoryExpender.toggle();
-    this.HistoryWindow.toggle();
-
+    if (this.isMobile === false) {
+      this.HistoryExpender.toggle();
+      this.HistoryWindow.toggle();
+    }
     this.settings.SetHistoryOpenDefaultPosition(!this.settings.GetHistoryOpenDefaultPosition());
+    this.isHistoryOpen = this.settings.GetHistoryOpenDefaultPosition();
+
     this.settings.save();
   }
 
