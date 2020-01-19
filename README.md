@@ -102,8 +102,8 @@ All Provider can be configure in the environments settings  at  `\src\environmen
 ```
 
 To connect your logging/tracing system you have to Implementing simple search API.  
-The API must receive `trace`  ```http://YourSearchService.com/v1/trace/{traceId}```  
-* Trace ```<string>```:  an unique identifier of a request.  
+The API must receive `traceId`  ```http://YourSearchService.com/v1/trace/{traceId}```  
+
 >  :bulb: Add [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) support by adding header "Access-Control-Allow-Origin", "*"` .
 
 
