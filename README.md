@@ -29,7 +29,7 @@ Use the `--prod` flag for a production build.
 
 The application source format is json array: 
 
-``` 
+``` Json
 [   
      {
       'tracer': {
@@ -44,7 +44,7 @@ The application source format is json array:
                 'to': {
                      'name': 'ShoppingCart'
                       },
-                'startedAt': '2019-09-15T10:29:17.688Z',
+                'timestamp': '1579170558105231',
                 'action': 'GetOrder',
       },
       additionalfield1:1,
