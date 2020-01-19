@@ -29,7 +29,7 @@ Use the `--prod` flag for a production build.
 
 The application source format is json array: 
 
-``` 
+```javascript
 [   
      {
       'tracer': {
@@ -82,7 +82,7 @@ All Provider can be configure in the environments settings  at  `\src\environmen
 
 #### Zipkin Provider
 
-```
+```javascript
   tracingProvider: {
   	 name: 'zipkin',
 	   url: 'http://localhost:9411'
@@ -94,7 +94,7 @@ All Provider can be configure in the environments settings  at  `\src\environmen
 
 ### Default Provider
 
-```
+```javascript
  tracingProvider: {
   	 name: 'default',
 	   url:  'http://YourSearchService.com/v1'
