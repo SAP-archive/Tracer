@@ -2,7 +2,7 @@
 
 Tracing visualization and debugging assistant for distributed systems.
 
-![alt text](https://github.com/sap-staging/Tracer/blob/master/ReadMe/Main.PNG)
+![alt text](https://github.com/sap-staging/Tracer/blob/master/ReadMe/Main2.PNG)
 
 ## [Demo](https://tracer-demo.web.app)
 
