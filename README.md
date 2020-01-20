@@ -103,7 +103,7 @@ All Provider can be configure in the environments settings  at  `\src\environmen
 
 ServerSide tracing provider let you create your own provider without chancing tracer source code. 
 
-API need receive Get request to ```/trace/{traceId}``` and return [Tracer format](Tracer#source-format).
+API need receive Get request to ```/trace/{traceId}``` and return [Tracer format](https://github.com/SAP/Tracer#source-format).
 
 >  :bulb: Add [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) support by adding header "Access-Control-Allow-Origin", "*"` .
 
