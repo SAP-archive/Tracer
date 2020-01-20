@@ -70,17 +70,11 @@ The application source format is json array:
 
 Any additional fields will be automatically added and can be examine.
 
-
-## File Source
-
-* Load event list from disk.
-* Save events on disk. 
-
 ## Tracing Provider
 
 All Provider can be configure in the environments settings  at  `\src\environments\environment.prod.ts` and `\src\environments\environment.ts`.  
 
-#### Zipkin Provider
+### Zipkin Provider
 
 ```javascript
   tracingProvider: {
@@ -107,6 +101,9 @@ API need receive Get request to ```/trace/{traceId}``` and return [Tracer format
 
 >  :bulb: Add [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) support by adding header "Access-Control-Allow-Origin", "*"` .
 
+### File provider
+* Load event list from disk.
+* Save events on disk. 
 
 ## Ordering 
 
