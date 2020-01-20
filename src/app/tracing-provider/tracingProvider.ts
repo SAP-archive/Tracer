@@ -1,6 +1,8 @@
 import { EventModel } from '../model/event-model';
 
-export interface Search {
+export interface TracingProvider {
 
   Get(traceId: string): Promise<EventModel[]>;
+  GetName(): string;
+
 }

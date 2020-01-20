@@ -92,17 +92,18 @@ All Provider can be configure in the environments settings  at  `\src\environmen
 > :bulb: it use internally Zipkin v2 API [/trace/{traceId}](https://zipkin.io/zipkin-api/#/default/get_trace__traceId_) 
 
 
-### Default Provider
+### ServerSide Tracing Provider 
 
 ```javascript
  tracingProvider: {
-  	 name: 'default',
+  	 name: 'serverSide',
 	   url:  'http://YourSearchService.com/v1'
  }
 ```
 
-To connect your logging/tracing system you have to Implementing simple search API.  
-The API must receive `traceId`  ```http://YourSearchService.com/v1/trace/{traceId}```  
+ServerSide tracing provider let you create your own provider without chancing tracer source code. 
+
+API need receive Get request to ```/trace/{traceId}``` and return (Tracer format)[Tracer#source-format].
 
 >  :bulb: Add [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) support by adding header "Access-Control-Allow-Origin", "*"` .
 

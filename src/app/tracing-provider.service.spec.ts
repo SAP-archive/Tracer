@@ -1,12 +1,12 @@
 import { TestBed } from '@angular/core/testing';
 
-import { ZipkinService } from './zipkin.service';
+import { TracingProviderService } from './tracing-provider.service';
 
-describe('ZipkinService', () => {
+describe('SearchService', () => {
   beforeEach(() => TestBed.configureTestingModule({}));
 
   it('should be created', () => {
-    const service: ZipkinService = TestBed.get(ZipkinService);
+    const service: TracingProviderService = TestBed.get(TracingProviderService);
     expect(service).toBeTruthy();
   });
 });

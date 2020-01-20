@@ -6,8 +6,8 @@ export const environment = {
   production: false,
   tracingProvider:
   {
-    name: 'default', // default, zipkin
-    url: 'http://YourSearchService.com/v1/Search' //http://localhost:9411'
+    name: 'not define', // serverSide, zipkin
+    url: 'http://testtracer.azurewebsites.net/zipkin' //http://localhost:9411'
   },
   defaultStickyTags: ['tracer.traceId', 'user.*' ]
   ,  'links': [

@@ -3,7 +3,7 @@ import { EventModel } from '../model/event-model';
 import { FileEvent } from '../menu/menu.component';
 import { OrderManagerService } from '../order-manager.service';
 import { historyRecord } from '../history/history.component';
-import { SearchService } from '../search.service';
+import { TracingProviderService } from '../tracing-provider.service';
 import { appSettings } from '../app-settings/app-settings.service';
 import { MatDrawer } from '@angular/material/sidenav';
 import { MatTabChangeEvent } from '@angular/material/tabs';
@@ -33,7 +33,7 @@ export class MainComponent implements OnInit {
   @ViewChild('HistoryExpender', { static: true }) HistoryExpender: MatDrawer;
 
   constructor(
-    private searchService: SearchService,
+    private tracingProviderService: TracingProviderService,
     private orderManagerService: OrderManagerService,
     private settings: appSettings
   ) { }
@@ -74,14 +74,12 @@ export class MainComponent implements OnInit {
       this.init(c => Promise.resolve(this.settings.GetHistoryRecords()[index].result));
     } else {
 
-      if (environment.tracingProvider.url.startsWith('http://YourSearchService.com/v1/Search')) {
-        this.error = 'Configuration required.'
-          + '\n To enable search, please configure connection to the source of logs / events.'
-          + '\n For more details: https://github.com/sap/Tracer#tracing-provider.';
+       if (!this.tracingProviderService.HasTracingProvider()) {
+        this.error = this.tracingProviderService.GetErrorMessage();
         this.loading = false;
         return;
       }
-      this.init(c => this.searchService.GetFlow(c));
+      this.init(c => this.tracingProviderService.GetFlow(c));
     }
   }
 
@@ -145,10 +143,8 @@ export class MainComponent implements OnInit {
       return;
     }
 
-    if (environment.tracingProvider.url.startsWith('http://YourSearchService.com/v1/Search')) {
-      this.error = 'Configuration required.'
-        + '\n To enable search, please configure connection to the source of logs / events.'
-        + '\n For more details: https://github.com/sap/Tracer#tracing-provider.';
+    if (!this.tracingProviderService.HasTracingProvider()) {
+      this.error = this.tracingProviderService.GetErrorMessage();
       this.loading = false;
       return;
     }
@@ -158,7 +154,7 @@ export class MainComponent implements OnInit {
     this.settings.SetTraceId(this.traceId);
 
     this.traceId = this.selectedTraceId;
-    this.init(c => this.searchService.GetFlow(c));
+    this.init(c => this.tracingProviderService.GetFlow(c));
 
   }
 
