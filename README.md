@@ -2,11 +2,28 @@
 
 Tracing visualization and debugging assistant for distributed systems.
 
-![alt text](https://github.com/sap-staging/Tracer/blob/master/ReadMe/Main2.PNG)
+[![alt text](https://github.com/sap-staging/Tracer/blob/master/ReadMe/Main2.PNG)](https://tracer-demo.web.app)
 
-## [Demo](https://tracer-demo.web.app)
+**Contents**
 
-There is demo link showing few record in the history panel to play with.
+- [Tracer](#tracer)
+  - [Demo](#demo)
+  - [Why should I use Tracer?](#why-should-i-use-tracer)
+  - [How to run on your development machine](#how-to-run-on-your-development-machine)
+  - [Build](#build)
+  - [Tracing Provider](#tracing-provider)
+    - [Zipkin Provider](#zipkin-provider)
+    - [Server Side Tracing Provider](#server-side-tracing-provider )
+    - [File provider](#file-provider)
+    - [Data Model](#data-model)
+  - [Ordering](#ordering)
+  - [License](#license)
+
+
+
+## Demo
+
+The [demo](https://tracer-demo.web.app) is configure with few record in the history panel.
 
 ## Why should I use Tracer?
 
@@ -25,9 +42,50 @@ Run `ng build` to build the project.
 The build artifacts will be stored in the `dist/` directory.   
 Use the `--prod` flag for a production build.
 
-### Source Format
 
-The application source format is json array: 
+
+## Tracing Provider
+
+After selecting the tracing provider it should be configure in the environments settings  (`\src\environments\environment.prod.ts` and `\src\environments\environment.ts`).  
+
+### Zipkin Provider
+
+```javascript
+  tracingProvider: {
+  	 name: 'zipkin',
+	   url: 'http://localhost:9411'
+ }
+```
+
+> :bulb: it use internally Zipkin v2 API [/trace/{traceId}](https://zipkin.io/zipkin-api/#/default/get_trace__traceId_) 
+
+
+### Server Side Tracing Provider 
+
+```javascript
+ tracingProvider: {
+  	 name: 'serverSide',
+	   url:  'http://YourSearchService.com/v1'
+ }
+```
+
+Server Side tracing provider let you create your own provider without chancing tracer source code. 
+
+Create a API that receive Get request to ```/trace/{traceId}``` and return [Tracer format](https://github.com/SAP/Tracer#source-format).
+
+>  :bulb: Add [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) support by adding header "Access-Control-Allow-Origin", "*"` .
+
+### File provider
+
+* Load event list from disk.
+
+* Save events on disk. 
+
+  
+
+### Data Model
+
+The application receive from the tracing provider array of Data Model: 
 
 ```javascript
 [   
@@ -70,40 +128,7 @@ The application source format is json array:
 
 Any additional fields will be automatically added and can be examine.
 
-## Tracing Provider
 
-All Provider can be configure in the environments settings  at  `\src\environments\environment.prod.ts` and `\src\environments\environment.ts`.  
-
-### Zipkin Provider
-
-```javascript
-  tracingProvider: {
-  	 name: 'zipkin',
-	   url: 'http://localhost:9411'
- }
-```
-
-> :bulb: it use internally Zipkin v2 API [/trace/{traceId}](https://zipkin.io/zipkin-api/#/default/get_trace__traceId_) 
-
-
-### ServerSide Tracing Provider 
-
-```javascript
- tracingProvider: {
-  	 name: 'serverSide',
-	   url:  'http://YourSearchService.com/v1'
- }
-```
-
-ServerSide tracing provider let you create your own provider without chancing tracer source code. 
-
-API need receive Get request to ```/trace/{traceId}``` and return [Tracer format](https://github.com/SAP/Tracer#source-format).
-
->  :bulb: Add [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) support by adding header "Access-Control-Allow-Origin", "*"` .
-
-### File provider
-* Load event list from disk.
-* Save events on disk. 
 
 ## Ordering 
 
