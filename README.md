@@ -7,7 +7,7 @@ Tracing visualization and debugging assistant for distributed systems.
 **Contents**
 
 - [Tracer](#tracer)
-  - [Demo](#demo)
+  - [Demo](https://tracer-demo.web.app)
   - [Why should I use Tracer?](#why-should-i-use-tracer)
   - [How to run on your development machine](#how-to-run-on-your-development-machine)
   - [Build](#build)
