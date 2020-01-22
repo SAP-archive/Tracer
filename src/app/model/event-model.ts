@@ -34,9 +34,7 @@ export interface Metadata {
 }
 
 
-/// 'CLIENT': 'SERVER':  'PRODUCER':  'CONSUMER': log? what the right expirations?
-// ActionStart can be Doing
-// ActionEnd can be Reacting
+
 
 /*
 Logical transaction:
@@ -47,6 +45,6 @@ Case 1 logical transaction end (dashed line ⇠)
 */
 
 export enum Direction {
-  LogicalTransactionStart, LogicalTransactionEnd, ActionStart, ActionEnd
+  LogicalTransactionStart, LogicalTransactionEnd, ActionStart
 }
 // TODO: add validation

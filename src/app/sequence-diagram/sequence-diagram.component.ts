@@ -78,8 +78,6 @@ export class SequenceDiagramComponent implements OnInit {
       let lineType = '';
       if (event.tracer.direction === Direction.ActionStart) {
         lineType = '->>';
-      } else if (event.tracer.direction === Direction.ActionEnd) {
-        lineType = '-->>';
       } else if (event.tracer.direction === Direction.LogicalTransactionStart && !event.tracer.metadata.isFake) {
         lineType = '->>+';
       } else if (event.tracer.direction === Direction.LogicalTransactionStart && event.tracer.metadata.isFake) {

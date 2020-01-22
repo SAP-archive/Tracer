@@ -13,7 +13,7 @@ Tracing visualization and debugging assistant for distributed systems.
   - [Build](#build)
   - [Tracing Provider](#tracing-provider)
     - [Zipkin Provider](#zipkin-provider)
-    - [Server Side Tracing Provider](#server-side-tracing-provider )
+    - [Server Side Tracing Provider](#server-side-tracing-provider)
     - [File provider](#file-provider)
     - [Data Model](#data-model)
   - [Ordering](#ordering)
@@ -118,7 +118,7 @@ The application receive from the tracing provider array of Data Model:
 | spanId       | An unique identifier to define a new scope. Any interactions forked from this one, will inherit it as a **parentSpanId** |
 | parentSpanId | The parent scope id (the first scope expected to be with no parentSpanId) |
 | durationMs   | The time elapsed                                             |
-| direction    | A numeration that effect the sequence diagram:<br /><br />**Logical transaction:**<br />All the inner interactions will be in the same **operation block** .<br />comprise of start and end, when one of them is missing it will auto generate it  (The line courser will be with cross **⥇** ). <br /><br />**Case 0 logical transaction start** (striate line *→* )<br />**Case 1 logical transaction end**   (dashed line *⇠*)<br /> <br /> <br /> **Action with no continuation:** <br />A simple line with no side effect ,Log are excellent example of it.  <br />**Case 2 Action Start** ( striate line *→*) <br />**Case 3 Action End**  ( dashed line *⇠* )<br /> |
+| direction    | A numeration that effect the sequence diagram:<br /><br />**Logical transaction:**<br />All the inner interactions will be in the same **operation block** .<br />comprise of start and end, when one of them is missing it will auto generate it  (The line courser will be with cross **⥇** ). <br /><br />**Case 0 logical transaction start** (striate line *→* )<br />**Case 1 logical transaction end**   (dashed line *⇠*)<br /> <br /> <br /> **Action with no continuation:** <br />A simple line with no side effect ,Log are excellent example of it.  <br />**Case 2 Action Start** ( striate line *→*) <br /> |
 | action       | The action title, e.g. login, GetUserList                    |
 | timestamp    | The timestamp the action started <br /> Epoch **microseconds** of this event. |
 | error        | An error message, if present, changes the line styling to red. |

@@ -114,8 +114,7 @@ export class OrderManagerService {
 
     const rootsCandidate: EventModel[] = Object.keys(events).map(x => events[x])
       .filter(event => event.tracer.direction === Direction.LogicalTransactionStart
-        || event.tracer.direction === Direction.ActionStart
-        || event.tracer.direction === Direction.ActionEnd);
+        || event.tracer.direction === Direction.ActionStart);
 
     // add all parent flows to ordered flow so we can initiate the processing
 
@@ -166,19 +165,24 @@ export class OrderManagerService {
       flow.tracer.metadata.visit = true;
       serverToNodes.AddNode(flow);
       // check if this flow has a closing event
-      if (flow.tracer.direction === Direction.LogicalTransactionStart || flow.tracer.direction === Direction.ActionStart) {
+      const direction = flow.tracer.direction;
 
+      // try to add close event in the end
+      if (direction === Direction.LogicalTransactionStart) {
         const closeEventId: string = getRequestOppositeDestination(flow);
         const closeEvent = events[closeEventId];
         if (closeEvent) {
           orderedFlows.push(closeEvent);
         }
+      }
 
-        // get all child flow
+      // find child flow to put in the middle
+      if (direction === Direction.LogicalTransactionStart || direction === Direction.ActionStart) {
+
         const parentSpan = flow.tracer.spanId;
         if (parentSpan) {
           const childFlows = requestToOtherSystems
-          .filter(event => event.tracer.parentSpanId === parentSpan);
+            .filter(event => event.tracer.parentSpanId === parentSpan);
 
           if (childFlows) {
             // order is opposite of stack
@@ -188,6 +192,7 @@ export class OrderManagerService {
           }
         }
       }
+
     }
 
     // missing all event the not seen
