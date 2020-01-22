@@ -157,23 +157,29 @@ export class OrderManagerService {
     orderedFlows.push(root);
     while (orderedFlows.length > 0) {
       const flow: EventModel = orderedFlows.pop();
+
       if (flow.tracer.metadata.visit) {
         continue;
       }
+
       output.push(flow);
       flow.tracer.metadata.visit = true;
       serverToNodes.AddNode(flow);
       // check if this flow has a closing event
-      if (flow.tracer.direction === Direction.LogicalTransactionStart) {
+      if (flow.tracer.direction === Direction.LogicalTransactionStart || flow.tracer.direction === Direction.ActionStart) {
+
         const closeEventId: string = getRequestOppositeDestination(flow);
         const closeEvent = events[closeEventId];
         if (closeEvent) {
           orderedFlows.push(closeEvent);
         }
+
         // get all child flow
-        const uniqueFlow = flow.tracer.spanId;
-        if (uniqueFlow) {
-          const childFlows = requestToOtherSystems.filter(event => event.tracer.parentSpanId === flow.tracer.spanId);
+        const parentSpan = flow.tracer.spanId;
+        if (parentSpan) {
+          const childFlows = requestToOtherSystems
+          .filter(event => event.tracer.parentSpanId === parentSpan);
+
           if (childFlows) {
             // order is opposite of stack
             childFlows.sort((a, b) => b.tracer.timestamp - a.tracer.timestamp).forEach((child: EventModel) => {
