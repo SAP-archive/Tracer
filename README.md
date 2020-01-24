@@ -27,8 +27,14 @@ The [demo](https://tracer-demo.web.app) is configure with few record in the hist
 
 ## Why should I use Tracer?
 
-Tracer helps you focus on the "bigger picture" by exposing you to a simplified sequence diagram comprised 
-of accurate component interactions within your application's logical flows.
+For me, it all starts when I diagnosed a production issue that spared across a few microservices.  
+While trying to make sense I drew the flow who call who, why?  
+Then realized that I spent a lot of time and effort trying to understand the flow and visual it.  
+
+I decided to find a better way, then when Tracer was born.
+
+Tracer helps you focus on the "bigger picture" by exposing you to a simplified sequence diagram.  
+There are other great tools most of them are focus performance or better suite to read flow that compose form hundreds of interaction.
 
 ## How to run on your development machine
 
