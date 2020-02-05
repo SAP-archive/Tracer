@@ -4,6 +4,7 @@
 
 export const environment = {
   production: false,
+  docker: false,
   tracingProvider:
   {
     name: 'not define', // serverSide, zipkin

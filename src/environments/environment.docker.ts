@@ -1,5 +1,6 @@
 export const environment = {
   production: true,
+  docker: true,
   tracingProvider:
   {
     name: '${TRACER_ENV_TracingProviderName}',
