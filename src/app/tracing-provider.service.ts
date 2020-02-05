@@ -1,5 +1,4 @@
 import { Injectable, Inject } from '@angular/core';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { EventModel } from './model/event-model';
 import { environment } from 'src/environments/environment';
 import { TracingProvider } from './tracing-provider/tracingProvider';

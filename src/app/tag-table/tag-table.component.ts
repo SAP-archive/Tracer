@@ -1,7 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { SelectionModel, SelectionChange } from '@angular/cdk/collections';
-import { environment } from 'src/environments/environment';
 import { appSettings } from '../app-settings/app-settings.service';
 
 @Component({

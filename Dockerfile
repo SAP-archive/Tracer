@@ -13,7 +13,7 @@ RUN npm install @angular/cli@8.1.2 -g
 RUN npm install
 
 # Build Angular
-RUN ng build --prod
+RUN ng build --configuration=docker
 ################ Build ################
 
 
@@ -22,16 +22,22 @@ RUN ng build --prod
 
 FROM nginx:alpine
 
+############### Set Defualt Value ################
+ENV TRACER_ENV_TracingProviderName=serverSide
+ENV TRACER_ENV_TracingProviderUrl=serverSide
+############### Set Defualt Value ################
+
 # Dist artifacts to default nginx public folder
 COPY --from=builder /app/dist /usr/share/nginx/html
 
+RUN apk add --update bash
+
+#Define the entry point
+COPY --from=builder /app/docker-entrypoint.sh /docker-entrypoint.sh
+RUN cat docker-entrypoint.sh >entrypoint.sh
+ENTRYPOINT ["bin/bash", "./entrypoint.sh"]
+
 CMD ["nginx", "-g", "daemon off;"]
-
-# EXPOSE Port 80
 EXPOSE 80
+
 ################ Serve ################
-
-
-## Run Local
-## docker build -t local-test .
-## docker run -p 127.0.0.1:3001:80 local-test

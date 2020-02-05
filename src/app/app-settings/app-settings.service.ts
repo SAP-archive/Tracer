@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { environment } from 'src/environments/environment.prod';
+import { environment } from 'src/environments/environment';
 import { historyRecord } from '../history/history.component';
 import { HistoryExample } from './history-example';
 import { Location } from '@angular/common';

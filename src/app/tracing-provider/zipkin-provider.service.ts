@@ -1,4 +1,4 @@
-import { environment } from 'src/environments/environment.prod';
+import { environment } from 'src/environments/environment';
 import { EventModel, Direction } from '../model/event-model';
 import { Injectable } from '@angular/core';
 import { TracingProvider } from './tracingProvider';
