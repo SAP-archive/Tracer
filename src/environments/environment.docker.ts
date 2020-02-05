@@ -1,10 +1,10 @@
 export const environment = {
   production: true,
-  docker: false,
+  docker: true,
   tracingProvider:
   {
-    name: 'not define', // serverSide, zipkin
-    url: 'http://testtracer.azurewebsites.net/zipkin' //http://localhost:9411'
+    name: '${TRACER_ENV_TracingProviderName}',
+    url: '${TRACER_ENV_TracingProviderUrl}',
   },
   defaultStickyTags: ['tracer.traceId', 'user.*']
   , 'links': [

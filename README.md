@@ -11,6 +11,9 @@ Tracing visualization and debugging assistant for distributed systems.
   - [Why should I use Tracer?](#why-should-i-use-tracer)
   - [How to run on your development machine](#how-to-run-on-your-development-machine)
   - [Build](#build)
+  - [Docker](#docker)
+    - [Docker Build](#docker-build)
+    - [Docker Run ](#docker-run)
   - [Tracing Provider](#tracing-provider)
     - [Zipkin Provider](#zipkin-provider)
     - [Server Side Tracing Provider](#server-side-tracing-provider)
@@ -47,6 +50,30 @@ The app will automatically reload if you change any of the source files.
 Run `ng build` to build the project.  
 The build artifacts will be stored in the `dist/` directory.   
 Use the `--prod` flag for a production build.
+
+## Docker
+
+### Docker Build 
+
+```bash
+ docker build -t tracer .
+```
+
+###   Docker Run 
+
+```bash
+docker run 
+--env TRACER_ENV_TracingProviderName='serverSide'
+--env TRACER_ENV_TracingProviderUrl='http://Server'
+-p 127.0.0.1:3001:80 tracer
+```
+
+| environment variables          | Values                | Description                       |
+| ------------------------------ | --------------------- | --------------------------------- |
+| TRACER_ENV_TracingProviderName | `zipkin`,`serverSide` | Setting the Tracing provider name |
+| TRACER_ENV_TracingProviderUrl  | URL http://Server     | Tracing provider server           |
+
+visit the [app]( http://localhost:3001 ) 
 
 
 

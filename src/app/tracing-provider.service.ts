@@ -1,5 +1,4 @@
 import { Injectable, Inject } from '@angular/core';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { EventModel } from './model/event-model';
 import { environment } from 'src/environments/environment';
 import { TracingProvider } from './tracing-provider/tracingProvider';
@@ -19,6 +18,13 @@ export class TracingProviderService {
     this.ErrorMessage = 'Configuration required.'
       + `\n To enable search, please configure tracing provider (available providers: ${providers.map(x => x.GetName()).join(',')})`
       + '\n For more details: https://github.com/sap/Tracer#tracing-provider.';
+
+    if (environment.docker) {
+      this.ErrorMessage = 'Configuration required.'
+      + `\n To enable search, please configure tracing provider (available providers: ${providers.map(x => x.GetName()).join(',')})`
+      + '\n You can define tracing provider by providing  env TRACER_ENV_TracingProviderName ,TRACER_ENV_TracingProviderUrl.'
+      + '\n For more details: https://github.com/sap/Tracer#tracing-provider.';
+      }
   }
 
   public HasTracingProvider() {
