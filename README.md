@@ -174,3 +174,7 @@ Top item: recommended to be one event  with no parentSpanId.
 
 Copyright (c) 2019 SAP SE or an SAP affiliate company. All rights reserved.  
 This file is licensed under the Apache 2.0 except as noted otherwise in the [LICENSE file](https://github.com/sap-staging/Tracer/blob/master/LICENSE).
+
+Please note that Docker images can contain other software which may be licensed under different licenses.  
+This License file is also included in the Docker image.   
+For any usage of built Docker images please make sure to check the licenses of the artifacts contained in the images.
